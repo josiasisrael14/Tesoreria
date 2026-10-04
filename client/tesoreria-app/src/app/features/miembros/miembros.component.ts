@@ -499,6 +499,12 @@ export class MiembrosComponent implements OnInit {
     URL.revokeObjectURL(url);
   }
 
+  /** Iniciales (nombre + apellido) para el círculo junto al nombre en la tabla. */
+  iniciales(miembro: Miembro): string {
+    const inicial = (texto: string | null | undefined) => (texto ?? '').trim().charAt(0);
+    return (inicial(miembro.nombres) + inicial(miembro.apellidos)).toUpperCase() || '?';
+  }
+
   private extraerMensaje(err: unknown): string {
     const httpError = err as { error?: { mensaje?: string } };
     return httpError?.error?.mensaje ?? 'Ocurrió un error inesperado.';

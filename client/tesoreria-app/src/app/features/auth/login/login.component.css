@@ -1,37 +1,313 @@
-.pagina-login {
+/* ───────── Login ─────────
+   Todo con nombres propios (login-*) para no mezclarse con .pagina-login /
+   .tarjeta-login de styles.css, que siguen usando "Olvidé mi contraseña" y
+   "Restablecer contraseña". */
+
+.login-pagina {
+  --login-oliva: #434826;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-superficie-2);
-  padding: 16px;
+  padding: 24px 16px;
+  background:
+    radial-gradient(900px 480px at 50% -8%, rgba(122, 42, 56, 0.1), transparent 65%),
+    radial-gradient(800px 460px at 105% 105%, rgba(67, 72, 38, 0.13), transparent 60%),
+    var(--color-superficie-2);
 }
 
-.tarjeta-login {
+.login-tarjeta {
+  position: relative;
+  overflow: hidden;
   width: 100%;
-  max-width: 360px;
-  background: var(--color-fondo);
-  border: 1px solid var(--color-borde);
-  border-radius: 12px;
-  padding: 32px 28px;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
+  padding: 40px 32px 32px;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(33, 38, 47, 0.05),
+    0 18px 40px -12px rgba(33, 38, 47, 0.2);
+  animation: login-entrada 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-.marca-login {
+/* Franja fina guinda → oliva arriba de la tarjeta: detalle de marca. */
+.login-tarjeta::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-acento), var(--login-oliva));
+}
+
+/* ── Cabecera: logo, nombre del sistema, saludo ── */
+.login-cabecera {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  text-align: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.login-logo {
+  display: block;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  margin-bottom: 6px;
+}
+
+.login-sistema {
+  margin: 0;
+  font-size: 0.72rem;
   font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--login-oliva);
+}
+
+.login-cabecera h1 {
+  margin: 4px 0 0;
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-texto);
+}
+
+.login-ayuda {
+  margin: 0;
+  font-size: 0.92rem;
   color: var(--color-texto-suave);
 }
 
-.marca-icono {
-  font-size: 1.1rem;
+/* ── Campos ── */
+.login-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
 }
 
-.tarjeta-login h1 {
+.login-campo label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
+.login-input {
+  position: relative;
+  color: var(--color-texto-suave);
+}
+
+.login-input:focus-within {
+  color: var(--color-acento);
+}
+
+.login-icono {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 19px;
+  height: 19px;
+  transform: translateY(-50%);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.login-input input {
+  width: 100%;
+  height: 48px;
+  padding: 0 46px 0 44px;
+  font: inherit;
+  font-size: 16px; /* 16px evita el zoom automático de iPhone al tocar el campo */
+  color: var(--color-texto);
+  background: #ffffff;
+  border: 1.5px solid var(--color-borde);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.login-input input::placeholder {
+  color: #9aa1ad;
+}
+
+.login-input input:hover {
+  border-color: #c9c2b0;
+}
+
+.login-input input:focus {
+  border-color: var(--color-acento);
+  box-shadow: 0 0 0 4px rgba(122, 42, 56, 0.12);
+}
+
+/* El navegador pinta de celeste los campos autocompletados: lo dejamos blanco
+   como el resto, sin perder el anillo de foco. */
+.login-input input:-webkit-autofill,
+.login-input input:-webkit-autofill:hover {
+  -webkit-text-fill-color: var(--color-texto);
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+  caret-color: var(--color-texto);
+  transition: background-color 9999s ease-out 0s;
+}
+
+.login-input input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-texto);
+  -webkit-box-shadow:
+    0 0 0 1000px #ffffff inset,
+    0 0 0 4px rgba(122, 42, 56, 0.12);
+  caret-color: var(--color-texto);
+  transition: background-color 9999s ease-out 0s;
+}
+
+/* ── El ojito ── */
+.login-ojo {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  width: 36px;
+  height: 36px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--color-texto-suave);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.login-ojo:hover {
+  color: var(--color-acento);
+  background: var(--color-acento-suave);
+}
+
+.login-ojo:focus-visible {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 1px;
+}
+
+.login-ojo svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Mensaje de error ── */
+.login-error {
   margin: 0;
-  font-size: 1.3rem;
+  animation: login-sacudida 0.4s ease both;
+}
+
+/* ── Botón ── */
+.login-boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 48px;
+  margin-top: 4px;
+  padding: 0 18px;
+  font-size: 1rem;
+  border-radius: 10px;
+}
+
+.login-boton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.login-boton:focus-visible {
+  outline: 3px solid rgba(122, 42, 56, 0.35);
+  outline-offset: 2px;
+}
+
+.login-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: login-giro 0.7s linear infinite;
+}
+
+.login-tarjeta .enlace-volver {
+  align-self: center;
+  padding: 4px 6px;
+}
+
+/* ── Animaciones ── */
+@keyframes login-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes login-giro {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes login-sacudida {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-tarjeta,
+  .login-error {
+    animation: none;
+  }
+  .login-spinner {
+    animation-duration: 1.6s;
+  }
+}
+
+/* ── Celular ── */
+@media (max-width: 480px) {
+  .login-pagina {
+    padding: 16px 12px;
+  }
+
+  .login-tarjeta {
+    padding: 34px 22px 26px;
+    border-radius: 16px;
+  }
+
+  .login-logo {
+    max-width: 190px;
+  }
+
+  .login-cabecera h1 {
+    font-size: 1.4rem;
+  }
 }

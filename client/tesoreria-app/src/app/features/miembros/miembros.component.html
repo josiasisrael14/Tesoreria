@@ -10,26 +10,30 @@
         </svg>
       </span>
       <div>
-        <h1>Miembros</h1>
+        <h1>Directorio de miembros</h1>
+        <p class="subtitulo-pagina">Consulta, registra y administra a los miembros de la iglesia.</p>
       </div>
     </div>
 
     <div class="acciones-encabezado">
       <button
         type="button"
-        class="boton-icono boton-icono-grande"
+        class="boton-secundario boton-con-icono"
         title="Importar desde Excel"
+        aria-label="Importar desde Excel"
         (click)="abrirImportar()"
       >
         <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M10 13V3.5M6.2 6.8 10 3l3.8 3.8"/>
           <path d="M4 14.5v1.3A1.7 1.7 0 0 0 5.7 17.5h8.6a1.7 1.7 0 0 0 1.7-1.7v-1.3"/>
         </svg>
+        <span class="boton-texto">Importar</span>
       </button>
       <button
         type="button"
-        class="boton-icono boton-icono-grande"
+        class="boton-secundario boton-con-icono"
         title="Exportar a Excel"
+        aria-label="Exportar a Excel"
         [disabled]="exportando()"
         (click)="exportarExcel()"
       >
@@ -37,16 +41,19 @@
           <path d="M10 3v9.5M6.2 9.3 10 13l3.8-3.7"/>
           <path d="M4 14.5v1.3A1.7 1.7 0 0 0 5.7 17.5h8.6a1.7 1.7 0 0 0 1.7-1.7v-1.3"/>
         </svg>
+        <span class="boton-texto">Exportar</span>
       </button>
       <button
         type="button"
-        class="boton-icono boton-icono-grande boton-icono-primario"
+        class="boton-primario boton-con-icono"
         title="Nuevo miembro"
+        aria-label="Nuevo miembro"
         (click)="abrirNuevo()"
       >
         <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <path d="M10 4v12M4 10h12" />
         </svg>
+        <span class="boton-texto">Nuevo miembro</span>
       </button>
     </div>
   </div>
@@ -151,18 +158,26 @@
 
   <div class="tarjeta tarjeta-tabla">
     <div class="encabezado-pagina encabezado-tabla">
-      <div class="campo-busqueda">
-        <input
-          type="text"
-          placeholder="Buscar por nombre, apellido o documento…"
-          [(ngModel)]="busqueda"
-          (keyup.enter)="buscar()"
-        />
+      <div class="campo-busqueda campo-busqueda-moderno">
+        <div class="busqueda-caja">
+          <svg class="busqueda-icono" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="9" r="5.5" />
+            <path d="m13.2 13.2 3.8 3.8" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Buscar por nombre, apellido o documento…"
+            aria-label="Buscar miembros"
+            [(ngModel)]="busqueda"
+            (keyup.enter)="buscar()"
+          />
+        </div>
         <button type="button" class="boton-secundario" (click)="buscar()">Buscar</button>
       </div>
 
-      <label class="filtro-casilla">
-        <input type="checkbox" [ngModel]="mostrarInactivos()" (ngModelChange)="alternarMostrarInactivos()" />
+      <label class="filtro-casilla filtro-interruptor">
+        <input type="checkbox" role="switch" [ngModel]="mostrarInactivos()" (ngModelChange)="alternarMostrarInactivos()" />
+        <span class="interruptor" aria-hidden="true"></span>
         Mostrar inactivos
       </label>
     </div>
@@ -176,27 +191,42 @@
         <table mat-table [dataSource]="miembros()" class="tabla-material">
           <ng-container matColumnDef="nombreCompleto">
             <th mat-header-cell *matHeaderCellDef>Nombre completo</th>
-            <td mat-cell *matCellDef="let miembro">{{ miembro.apellidos }}, {{ miembro.nombres }}</td>
+            <td mat-cell *matCellDef="let miembro">
+              <div class="miembro-celda">
+                <span class="miembro-avatar" aria-hidden="true">{{ iniciales(miembro) }}</span>
+                <span class="miembro-nombre">{{ miembro.apellidos }}, {{ miembro.nombres }}</span>
+              </div>
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="documento">
             <th mat-header-cell *matHeaderCellDef>Documento</th>
-            <td mat-cell *matCellDef="let miembro">{{ miembro.documentoIdentidad || '—' }}</td>
+            <td mat-cell *matCellDef="let miembro">
+              @if (miembro.documentoIdentidad) { {{ miembro.documentoIdentidad }} } @else { <span class="celda-vacia">—</span> }
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="telefono">
             <th mat-header-cell *matHeaderCellDef>Teléfono</th>
-            <td mat-cell *matCellDef="let miembro">{{ miembro.telefono || '—' }}</td>
+            <td mat-cell *matCellDef="let miembro">
+              @if (miembro.telefono) { {{ miembro.telefono }} } @else { <span class="celda-vacia">—</span> }
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="correo">
             <th mat-header-cell *matHeaderCellDef>Correo</th>
-            <td mat-cell *matCellDef="let miembro">{{ miembro.email || '—' }}</td>
+            <td mat-cell *matCellDef="let miembro">
+              @if (miembro.email) { {{ miembro.email }} } @else { <span class="celda-vacia">—</span> }
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="estado">
             <th mat-header-cell *matHeaderCellDef>Estado</th>
-            <td mat-cell *matCellDef="let miembro">{{ miembro.activo ? 'Activo' : 'Desactivado' }}</td>
+            <td mat-cell *matCellDef="let miembro">
+              <span class="insignia" [class.insignia-activa]="miembro.activo" [class.insignia-inactiva]="!miembro.activo">
+                {{ miembro.activo ? 'Activo' : 'Desactivado' }}
+              </span>
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="acciones">

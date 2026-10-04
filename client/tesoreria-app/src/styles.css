@@ -695,59 +695,161 @@ h2 {
   white-space: nowrap;
 }
 
-/* Encabezado plano, igual que el resto de las tablas de la app (.tabla th):
-   sin fondo de color, en negrita y texto normal (no mayúsculas), con una
-   línea abajo. */
+/* ── Tabla de Miembros (mat-table) — estilo moderno ──
+   Solo líneas horizontales suaves, encabezado discreto en mayúsculas pequeñas,
+   sin franjas alternadas y con resalte suave al pasar el mouse. Los bordes de
+   Angular Material se ajustan con sus variables de tema (la forma soportada). */
+.tabla-material {
+  --mat-table-header-container-height: 46px;
+  --mat-table-row-item-container-height: 62px;
+  --mat-table-row-item-outline-color: rgba(33, 38, 47, 0.08);
+  --mat-table-row-item-outline-width: 1px;
+}
+
+/* La tabla heredaba una tipografía con serifas de Material: la igualamos al
+   resto de la app (la misma de los menús y botones). */
+.tabla-material,
+.tabla-material .mat-mdc-header-cell,
+.tabla-material .mat-mdc-cell {
+  font-family: inherit !important;
+}
+
 .tabla-material .mat-mdc-header-row,
 .tabla-material .mat-mdc-header-cell {
-  background: #ffffff !important;
+  background: var(--color-fondo) !important;
 }
 
 .tabla-material .mat-mdc-header-cell {
-  /* !important en la tipografía: Angular Material la define con variables de
-     tema de mayor peso, que pisaban estas reglas sin el !important.
-     La línea usa box-shadow en vez de border: Material trae su propio
-     sistema de bordes con variables de tema que ganaban siempre a un border
-     normal (incluso con !important) — box-shadow es una propiedad que
-     Material no toca para nada acá, así que esta sí se ve garantizado. */
-  color: var(--color-texto) !important;
+  color: var(--color-texto-suave) !important;
   font-weight: 700 !important;
-  font-size: 0.92rem !important;
-  text-transform: none !important;
-  letter-spacing: normal !important;
-  box-shadow:
-    inset 0 -2px 0 rgba(33, 38, 47, 0.24),
-    inset 1px 0 0 rgba(33, 38, 47, 0.18),
-    inset -1px 0 0 rgba(33, 38, 47, 0.18);
+  font-size: 0.72rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.07em !important;
+  box-shadow: inset 0 -1px 0 rgba(33, 38, 47, 0.1);
   padding: 0 14px;
 }
 
 .tabla-material .mat-mdc-row {
   background: #ffffff !important;
-}
-
-/* Misma franja alternada + resalte que .tabla, para que esta grilla (con
-   Angular Material) se vea igual que el resto de las tablas de la app. */
-.tabla-material .mat-mdc-row:nth-child(even) {
-  background: var(--color-superficie) !important;
+  transition: background 0.12s ease;
 }
 
 .tabla-material .mat-mdc-row:hover {
-  background: var(--color-acento-suave) !important;
+  background: rgba(243, 227, 225, 0.45) !important;
 }
 
 .tabla-material .mat-mdc-cell {
   color: var(--color-texto);
-  font-size: 0.9rem;
-  /* box-shadow en vez de border: Angular Material trae su propio sistema de
-     bordes con variables de tema que ganaban siempre a un border normal
-     (incluso con !important). box-shadow es una propiedad que Material no
-     toca para nada acá, así que esta línea sí se ve garantizado. */
-  box-shadow:
-    inset 0 -1px 0 rgba(33, 38, 47, 0.16),
-    inset 1px 0 0 rgba(33, 38, 47, 0.12),
-    inset -1px 0 0 rgba(33, 38, 47, 0.12);
+  font-size: 0.92rem;
+  box-shadow: none;
   padding: 0 14px;
+}
+
+.tabla-material .mat-mdc-header-cell:first-of-type,
+.tabla-material .mat-mdc-cell:first-of-type {
+  padding-left: 16px;
+}
+
+.tabla-material .mat-mdc-header-cell:last-of-type,
+.tabla-material .mat-mdc-cell:last-of-type {
+  padding-right: 16px;
+}
+
+/* Columna de acciones alineada a la derecha, con íconos más cómodos de tocar. */
+.tabla-material .cdk-column-acciones.mat-mdc-header-cell {
+  text-align: right;
+}
+
+.tabla-material .acciones-tabla {
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+.tabla-material .boton-icono {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+}
+
+.tabla-material .boton-icono .icono-nav {
+  width: 18px;
+  height: 18px;
+}
+
+.tabla-material .boton-icono:hover {
+  background: var(--color-acento-suave);
+  color: var(--color-acento);
+}
+
+.tabla-material .boton-icono-exito:hover {
+  background: rgba(47, 107, 69, 0.12);
+  color: var(--color-bien);
+}
+
+.tabla-material .boton-icono-peligro:hover {
+  background: rgba(161, 70, 42, 0.12);
+  color: var(--color-mal);
+}
+
+/* Nombre con círculo de iniciales. text-transform solo cambia cómo se VE
+   (mayúscula inicial); el dato guardado no se toca. */
+.miembro-celda {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.miembro-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-acento-suave);
+  color: var(--color-acento);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.miembro-nombre {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.celda-vacia {
+  color: #b3b8c1;
+}
+
+/* Etiqueta de estado (Activo / Desactivado) */
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 11px 3px 9px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.insignia::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.insignia-activa {
+  background: rgba(47, 107, 69, 0.12);
+  color: var(--color-bien);
+}
+
+.insignia-inactiva {
+  background: rgba(91, 100, 114, 0.13);
+  color: var(--color-texto-suave);
 }
 
 .tabla-material .mat-mdc-row.fila-edicion,
@@ -961,4 +1063,155 @@ h2 {
 
 .enlace-volver:hover {
   text-decoration: underline;
+}
+
+/* ═════ Pantalla de Miembros: buscador, interruptor, botones y subtítulo ═════ */
+
+.subtitulo-pagina {
+  margin: 2px 0 0;
+  font-size: 0.88rem;
+  color: var(--color-texto-suave);
+}
+
+/* Botones del encabezado con ícono + texto */
+.boton-con-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  font-size: 0.9rem;
+}
+
+.boton-con-icono .icono-nav {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 1;
+}
+
+.acciones-encabezado .boton-secundario.boton-con-icono {
+  background: #ffffff;
+  border: 1px solid var(--color-borde);
+  color: var(--color-texto);
+}
+
+.acciones-encabezado .boton-secundario.boton-con-icono:hover:not(:disabled) {
+  background: var(--color-acento-suave);
+  border-color: var(--color-acento-suave);
+  color: var(--color-acento);
+}
+
+.acciones-encabezado .boton-secundario.boton-con-icono:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* En celular solo queda el ícono (el texto está en aria-label y title). */
+@media (max-width: 640px) {
+  .boton-con-icono .boton-texto {
+    display: none;
+  }
+
+  .boton-con-icono {
+    width: 40px;
+    padding: 0;
+  }
+}
+
+/* Buscador con lupa, más ancho */
+.campo-busqueda.campo-busqueda-moderno {
+  flex: 1 1 420px;
+  max-width: 560px;
+}
+
+.campo-busqueda-moderno .busqueda-caja {
+  position: relative;
+  flex: 1;
+}
+
+.campo-busqueda-moderno .busqueda-icono {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  color: var(--color-texto-suave);
+  pointer-events: none;
+}
+
+.campo-busqueda .busqueda-caja input {
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  padding: 0 12px 0 40px;
+  font-size: 0.95rem;
+  border: 1.5px solid var(--color-borde);
+  border-radius: 10px;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.campo-busqueda .busqueda-caja input:focus {
+  border-color: var(--color-acento);
+  box-shadow: 0 0 0 4px rgba(122, 42, 56, 0.12);
+}
+
+.campo-busqueda-moderno .boton-secundario {
+  height: 42px;
+  padding: 0 18px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+}
+
+/* "Mostrar inactivos" como interruptor (el checkbox sigue siendo el de verdad) */
+.filtro-interruptor {
+  position: relative;
+  gap: 10px;
+}
+
+.filtro-interruptor input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.filtro-interruptor .interruptor {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #cfc9ba;
+  transition: background 0.2s ease;
+}
+
+.filtro-interruptor .interruptor::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.filtro-interruptor input:checked + .interruptor {
+  background: var(--color-acento);
+}
+
+.filtro-interruptor input:checked + .interruptor::after {
+  transform: translateX(16px);
+}
+
+.filtro-interruptor input:focus-visible + .interruptor {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 2px;
 }

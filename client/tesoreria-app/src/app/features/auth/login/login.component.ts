@@ -21,6 +21,13 @@ export class LoginComponent {
   readonly cargando = signal(false);
   readonly error = signal<string | null>(null);
 
+  /** Mostrar u ocultar lo que se escribe en el campo de contraseña (el "ojito"). */
+  readonly verContrasena = signal(false);
+
+  alternarContrasena(): void {
+    this.verContrasena.update((visible) => !visible);
+  }
+
   async iniciarSesion(): Promise<void> {
     this.error.set(null);
     this.cargando.set(true);
