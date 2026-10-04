@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tesoreria.Domain\Tesoreria.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Único paquete externo de esta capa: solo trae las interfaces de DI (IServiceCollection),
+         para poder exponer AddApplication(). El resto de este proyecto (Commands, Queries,
+         Handlers, el Mediator hecho a mano) no depende de ningún paquete de terceros. -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

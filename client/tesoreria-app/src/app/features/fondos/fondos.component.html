@@ -1,0 +1,116 @@
+<section class="pagina">
+  <h1>Fondos</h1>
+  <p class="ayuda">Diezmo, Ofrenda General, Ofrenda Especial, Misiones, Construcción, etc.</p>
+
+  @if (error()) {
+    <div class="alerta-error">{{ error() }}</div>
+  }
+
+  <form class="tarjeta formulario" (ngSubmit)="crear()">
+    <h2>Nuevo fondo</h2>
+    <div class="campo">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" name="nombre" type="text" [(ngModel)]="nombre" required maxlength="100" />
+    </div>
+    <div class="campo">
+      <label for="tipo">Tipo</label>
+      <select id="tipo" name="tipo" [(ngModel)]="tipo">
+        <option value="Ingreso">Ingreso</option>
+        <option value="Egreso">Egreso</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="descripcion">Descripción (opcional)</label>
+      <input id="descripcion" name="descripcion" type="text" [(ngModel)]="descripcion" maxlength="400" />
+    </div>
+    <div class="campo">
+      <label>
+        <input type="checkbox" name="esFondoDeOfrendasEspeciales" [(ngModel)]="esFondoDeOfrendasEspeciales" />
+        Este es el fondo de Ofrendas Especiales
+      </label>
+      <p class="ayuda">Solo un fondo puede tener esto marcado. Al que se registran los aportes de todas las campañas (aniversario, pro templo, misionera, etc.).</p>
+    </div>
+    <button type="submit" class="boton-primario">Crear fondo</button>
+  </form>
+
+  @if (mostrarEdicion()) {
+    <div class="modal-fondo" (click)="cerrarEdicion()">
+      <form class="tarjeta modal-contenido" (ngSubmit)="guardarEdicion()" (click)="$event.stopPropagation()">
+        <h2>Editar fondo</h2>
+
+        <div class="campo">
+          <label for="editNombre">Nombre</label>
+          <input id="editNombre" name="editNombre" type="text" [(ngModel)]="editNombre" required maxlength="100" />
+        </div>
+        <div class="campo">
+          <label for="editTipo">Tipo</label>
+          <select id="editTipo" name="editTipo" [(ngModel)]="editTipo">
+            <option value="Ingreso">Ingreso</option>
+            <option value="Egreso">Egreso</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="editDescripcion">Descripción (opcional)</label>
+          <input id="editDescripcion" name="editDescripcion" type="text" [(ngModel)]="editDescripcion" maxlength="400" />
+        </div>
+        <div class="campo">
+          <label>
+            <input type="checkbox" name="editEsFondoDeOfrendasEspeciales" [(ngModel)]="editEsFondoDeOfrendasEspeciales" />
+            Este es el fondo de Ofrendas Especiales
+          </label>
+          <p class="ayuda">Solo un fondo puede tener esto marcado; si lo marcas aquí, se desmarca automáticamente del que lo tenía antes.</p>
+        </div>
+
+        <div class="fila-campos">
+          <button type="submit" class="boton-primario" [disabled]="guardandoEdicion()">
+            {{ guardandoEdicion() ? 'Guardando…' : 'Guardar cambios' }}
+          </button>
+          <button type="button" class="boton-secundario" (click)="cerrarEdicion()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <div class="tarjeta">
+    <h2>Fondos existentes</h2>
+    @if (cargando()) {
+      <p class="ayuda">Cargando…</p>
+    } @else if (fondos().length === 0) {
+      <p class="ayuda">Todavía no hay fondos creados.</p>
+    } @else {
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Descripción</th>
+            <th>Ofrendas especiales</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (fondo of fondos(); track fondo.id) {
+            <tr>
+              <td>{{ fondo.nombre }}</td>
+              <td>{{ fondo.tipo }}</td>
+              <td>{{ fondo.descripcion || '—' }}</td>
+              <td>
+                @if (fondo.esFondoDeOfrendasEspeciales) {
+                  <span class="etiqueta etiqueta-ingreso">Sí</span>
+                } @else {
+                  —
+                }
+              </td>
+              <td>
+                <div class="acciones-tabla">
+                  <button type="button" class="boton-secundario" (click)="abrirEdicion(fondo)">Editar</button>
+                  <button type="button" class="boton-secundario" (click)="desactivar(fondo.id)">Desactivar</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</section>

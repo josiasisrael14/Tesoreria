@@ -1,0 +1,74 @@
+<section class="pagina">
+  <h1>Mi perfil</h1>
+
+  <div class="tarjeta">
+    <h2>Mis datos</h2>
+    <p><strong>Nombre:</strong> {{ usuarioActual()?.nombreCompleto }}</p>
+    <p><strong>Correo:</strong> {{ usuarioActual()?.email }}</p>
+    <p><strong>Rol:</strong> {{ usuarioActual()?.rol }}</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2>Foto de perfil</h2>
+
+    @if (errorFoto()) {
+      <div class="alerta-error">{{ errorFoto() }}</div>
+    }
+
+    <div class="foto-perfil-actual">
+      @if (usuarioActual()?.fotoUrl) {
+        <img [src]="usuarioActual()!.fotoUrl" alt="" class="avatar avatar-grande avatar-foto" />
+      } @else {
+        <span class="avatar avatar-grande">{{ (usuarioActual()?.nombreCompleto || 'T').charAt(0).toUpperCase() }}</span>
+      }
+
+      <div class="foto-perfil-acciones">
+        <label class="boton-secundario" [class.boton-deshabilitado]="subiendoFoto()">
+          {{ subiendoFoto() ? 'Subiendo…' : (usuarioActual()?.fotoUrl ? 'Cambiar foto' : 'Subir foto') }}
+          <input
+            type="file"
+            accept="image/png, image/jpeg, image/webp"
+            [disabled]="subiendoFoto()"
+            (change)="seleccionarFoto($event)"
+            hidden
+          />
+        </label>
+
+        @if (usuarioActual()?.fotoUrl) {
+          <button type="button" class="boton-secundario" [disabled]="subiendoFoto()" (click)="quitarFoto()">
+            Quitar foto
+          </button>
+        }
+      </div>
+    </div>
+
+    <p class="ayuda">JPG, PNG o WEBP. Máximo 3 MB.</p>
+  </div>
+
+  <form class="tarjeta formulario" (ngSubmit)="cambiarContrasena()">
+    <h2>Cambiar contraseña</h2>
+
+    @if (error()) {
+      <div class="alerta-error">{{ error() }}</div>
+    }
+    @if (exito()) {
+      <div class="alerta-exito">Contraseña actualizada correctamente.</div>
+    }
+
+    <div class="campo">
+      <label for="contrasenaActual">Contraseña actual</label>
+      <input id="contrasenaActual" name="contrasenaActual" type="password" [(ngModel)]="contrasenaActual" required autocomplete="current-password" />
+    </div>
+    <div class="campo">
+      <label for="contrasenaNueva">Contraseña nueva</label>
+      <input id="contrasenaNueva" name="contrasenaNueva" type="password" [(ngModel)]="contrasenaNueva" required minlength="6" autocomplete="new-password" />
+    </div>
+    <div class="campo">
+      <label for="confirmarContrasenaNueva">Confirmar contraseña nueva</label>
+      <input id="confirmarContrasenaNueva" name="confirmarContrasenaNueva" type="password" [(ngModel)]="confirmarContrasenaNueva" required minlength="6" autocomplete="new-password" />
+    </div>
+    <button type="submit" class="boton-primario" [disabled]="guardando()">
+      {{ guardando() ? 'Guardando…' : 'Cambiar contraseña' }}
+    </button>
+  </form>
+</section>

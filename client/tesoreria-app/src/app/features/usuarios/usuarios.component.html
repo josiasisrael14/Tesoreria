@@ -1,0 +1,102 @@
+<section class="pagina">
+  <h1>Usuarios</h1>
+  <p class="ayuda">Quiénes pueden entrar al sistema, y con qué rol.</p>
+
+  @if (mensajeExito()) {
+    <div class="alerta-exito">{{ mensajeExito() }}</div>
+  }
+
+  @if (error()) {
+    <div class="alerta-error">{{ error() }}</div>
+  }
+
+  <form class="tarjeta formulario" (ngSubmit)="crear()">
+    <h2>Nuevo usuario</h2>
+    <div class="campo">
+      <label for="nombreCompleto">Nombre completo</label>
+      <input id="nombreCompleto" name="nombreCompleto" type="text" [(ngModel)]="nombreCompleto" required maxlength="150" />
+    </div>
+    <div class="campo">
+      <label for="email">Correo</label>
+      <input id="email" name="email" type="email" [(ngModel)]="email" required />
+    </div>
+    <div class="campo">
+      <label for="contrasena">Contraseña</label>
+      <input id="contrasena" name="contrasena" type="password" [(ngModel)]="contrasena" required minlength="6" />
+    </div>
+    <div class="campo">
+      <label for="rol">Rol</label>
+      <select id="rol" name="rol" [(ngModel)]="rol">
+        <option value="Tesorero">Tesorero</option>
+        <option value="Secretaria">Secretaria</option>
+        <option value="Pastor">Pastor</option>
+        <option value="Administrador">Administrador</option>
+      </select>
+    </div>
+    <button type="submit" class="boton-primario">Crear usuario</button>
+  </form>
+
+  <div class="tarjeta">
+    <h2>Usuarios existentes</h2>
+    @if (cargando()) {
+      <p class="ayuda">Cargando…</p>
+    } @else if (usuarios().length === 0) {
+      <p class="ayuda">Todavía no hay usuarios creados.</p>
+    } @else {
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (usuario of usuarios(); track usuario.id) {
+            <tr>
+              <td>
+                <div class="usuario-nombre-celda">
+                  @if (usuario.fotoUrl) {
+                    <img [src]="usuario.fotoUrl" alt="" class="avatar avatar-chica avatar-foto" />
+                  } @else {
+                    <span class="avatar avatar-chica">{{ usuario.nombreCompleto.charAt(0).toUpperCase() }}</span>
+                  }
+                  {{ usuario.nombreCompleto }}
+                </div>
+              </td>
+              <td>{{ usuario.email }}</td>
+              <td>{{ usuario.rol }}</td>
+              <td>{{ usuario.activo ? 'Activo' : 'Desactivado' }}</td>
+              <td>
+                @if (restableciendoId() === usuario.id) {
+                  <div class="restablecer-contrasena">
+                    <input
+                      type="password"
+                      placeholder="Contraseña nueva"
+                      [(ngModel)]="nuevaContrasena"
+                      [ngModelOptions]="{ standalone: true }"
+                      minlength="6"
+                    />
+                    <button type="button" class="boton-primario" (click)="confirmarRestablecer(usuario.id)">Guardar</button>
+                    <button type="button" class="boton-secundario" (click)="cancelarRestablecer()">Cancelar</button>
+                  </div>
+                } @else {
+                  <div class="acciones-tabla">
+                    @if (usuario.activo) {
+                      <button type="button" class="boton-secundario" (click)="desactivar(usuario.id)">Desactivar</button>
+                    } @else {
+                      <button type="button" class="boton-secundario" (click)="activar(usuario.id)">Activar</button>
+                    }
+                    <button type="button" class="boton-secundario" (click)="empezarRestablecer(usuario.id)">Restablecer contraseña</button>
+                  </div>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</section>

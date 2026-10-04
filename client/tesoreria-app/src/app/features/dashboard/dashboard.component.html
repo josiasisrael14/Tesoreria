@@ -1,0 +1,140 @@
+<section class="pagina pagina-dashboard">
+  <div class="encabezado-pagina">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="ayuda">Cómo está la iglesia este {{ nombreMesActual }}.</p>
+    </div>
+    <a routerLink="/transacciones/nuevo-ingreso" class="boton-primario">+ Registrar ingreso</a>
+  </div>
+
+  @if (error()) {
+    <div class="alerta-error">{{ error() }}</div>
+  }
+
+  @if (cargando() && !resumen()) {
+    <p class="ayuda">Cargando…</p>
+  } @else if (resumen(); as r) {
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="tarjeta kpi">
+        <span class="kpi-etiqueta">Ingresos del mes</span>
+        <span class="kpi-valor">{{ r.totalIngresosMes | currency: 'PEN' : 'S/ ' }}</span>
+        @if (r.variacionIngresosPorcentaje !== null && r.variacionIngresosPorcentaje !== undefined) {
+          <span class="kpi-delta" [class.kpi-delta-positiva]="r.variacionIngresosPorcentaje >= 0"
+                [class.kpi-delta-negativa]="r.variacionIngresosPorcentaje < 0">
+            {{ r.variacionIngresosPorcentaje >= 0 ? '▲' : '▼' }}
+            {{ (r.variacionIngresosPorcentaje >= 0 ? r.variacionIngresosPorcentaje : -r.variacionIngresosPorcentaje) | number: '1.0-1' }}%
+            <span class="kpi-delta-contexto">vs. mes anterior</span>
+          </span>
+        }
+      </div>
+
+      <div class="tarjeta kpi">
+        <span class="kpi-etiqueta">Miembros activos</span>
+        <span class="kpi-valor">{{ r.miembrosActivos }}</span>
+      </div>
+    </div>
+
+    <!-- Ingresos por fondo + progreso de campañas -->
+    <div class="fila-dos-columnas">
+      <div class="tarjeta">
+        <h2>Ingresos por fondo — {{ nombreMesActual }}</h2>
+        @if (r.ingresosPorFondo.length === 0) {
+          <p class="ayuda">Todavía no hay ingresos registrados este mes.</p>
+        } @else {
+          <div class="barras-fondo">
+            @for (item of r.ingresosPorFondo; track item.nombreFondo) {
+              <div class="barra-fondo-fila">
+                <span class="barra-fondo-etiqueta">{{ item.nombreFondo }}</span>
+                <div class="barra-fondo-pista">
+                  <div class="barra-fondo-relleno" [style.width.%]="anchoBarra(item.total)"></div>
+                </div>
+                <span class="barra-fondo-valor">{{ item.total | currency: 'PEN' : 'S/ ' }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="tarjeta">
+        <h2>Campañas de ofrenda especial</h2>
+        @if (r.campanasActivas.length === 0) {
+          <p class="ayuda">No hay campañas activas. Crea una en "Ofrendas especiales".</p>
+        } @else {
+          <div class="meters">
+            @for (campana of r.campanasActivas; track campana.ofrendaEspecialId) {
+              <div class="meter">
+                <div class="meter-encabezado">
+                  <span>{{ campana.nombre }}</span>
+                  <span class="meter-monto">
+                    {{ campana.recaudado | currency: 'PEN' : 'S/ ' }}
+                    @if (campana.meta) { <span class="ayuda"> de {{ campana.meta | currency: 'PEN' : 'S/ ' }}</span> }
+                  </span>
+                </div>
+                @if (campana.porcentajeAvance !== null && campana.porcentajeAvance !== undefined) {
+                  <div class="meter-pista">
+                    <div class="meter-relleno" [style.width.%]="campana.porcentajeAvance"></div>
+                  </div>
+                  <span class="ayuda">{{ campana.porcentajeAvance | number: '1.0-0' }}% de la meta</span>
+                } @else {
+                  <p class="ayuda">Esta campaña no tiene meta definida.</p>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="tarjeta">
+      <h2>Accesos rápidos</h2>
+      <div class="accesos-rapidos">
+        <a routerLink="/transacciones/nuevo-ingreso" class="acceso-rapido">+ Registrar ingreso</a>
+        <a routerLink="/miembros" class="acceso-rapido">+ Nuevo miembro</a>
+        <a routerLink="/ofrendas-especiales" class="acceso-rapido">+ Nueva campaña</a>
+        <a routerLink="/fondos" class="acceso-rapido">Ver fondos</a>
+        <a routerLink="/miembros" class="acceso-rapido">Ver miembros</a>
+      </div>
+    </div>
+
+    <!-- Últimas transacciones -->
+    <div class="tarjeta">
+      <div class="encabezado-pagina">
+        <h2>Últimas transacciones</h2>
+        <a routerLink="/transacciones" class="enlace">Ver todas →</a>
+      </div>
+      @if (r.ultimasTransacciones.length === 0) {
+        <p class="ayuda">Todavía no hay transacciones registradas.</p>
+      } @else {
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Fondo</th>
+              <th>Tipo</th>
+              <th>Monto</th>
+              <th>Miembro</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of r.ultimasTransacciones; track t.id) {
+              <tr [class.fila-reversada]="t.reversada">
+                <td>{{ t.fecha | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ t.nombreFondo }}</td>
+                <td>
+                  <span class="etiqueta" [class.etiqueta-ingreso]="t.tipoMovimiento === 'Ingreso'"
+                        [class.etiqueta-egreso]="t.tipoMovimiento === 'Egreso'">
+                    {{ t.tipoMovimiento }}
+                  </span>
+                </td>
+                <td class="monto-celda">{{ t.monto | currency: 'PEN' : 'S/ ' }}</td>
+                <td>{{ t.nombreMiembro || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+</section>

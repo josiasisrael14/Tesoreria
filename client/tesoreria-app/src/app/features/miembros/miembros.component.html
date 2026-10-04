@@ -1,0 +1,284 @@
+<section class="pagina">
+  <div class="encabezado-pagina">
+    <div class="titulo-con-icono">
+      <span class="icono-titulo-pagina">
+        <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="7" cy="6.5" r="2.5"/>
+          <path d="M2.5 17c0-3 2-4.8 4.5-4.8s4.5 1.8 4.5 4.8"/>
+          <circle cx="14.5" cy="7.5" r="2"/>
+          <path d="M13 12.6c2.1.2 3.8 1.9 3.8 4.4"/>
+        </svg>
+      </span>
+      <div>
+        <h1>Miembros</h1>
+      </div>
+    </div>
+
+    <div class="acciones-encabezado">
+      <button
+        type="button"
+        class="boton-icono boton-icono-grande"
+        title="Importar desde Excel"
+        (click)="abrirImportar()"
+      >
+        <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13V3.5M6.2 6.8 10 3l3.8 3.8"/>
+          <path d="M4 14.5v1.3A1.7 1.7 0 0 0 5.7 17.5h8.6a1.7 1.7 0 0 0 1.7-1.7v-1.3"/>
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="boton-icono boton-icono-grande"
+        title="Exportar a Excel"
+        [disabled]="exportando()"
+        (click)="exportarExcel()"
+      >
+        <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 3v9.5M6.2 9.3 10 13l3.8-3.7"/>
+          <path d="M4 14.5v1.3A1.7 1.7 0 0 0 5.7 17.5h8.6a1.7 1.7 0 0 0 1.7-1.7v-1.3"/>
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="boton-icono boton-icono-grande boton-icono-primario"
+        title="Nuevo miembro"
+        (click)="abrirNuevo()"
+      >
+        <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M10 4v12M4 10h12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alerta-error">{{ error() }}</div>
+  }
+
+  @if (mostrarImportar()) {
+    <div class="modal-fondo" (click)="cerrarImportar()">
+      <div class="tarjeta modal-contenido" (click)="$event.stopPropagation()">
+        <h2>Importar miembros desde Excel</h2>
+        <p class="ayuda">
+          El archivo debe tener estas columnas en la primera fila (en cualquier orden):
+          <strong>Nombres, Apellidos, Documento, Telefono, Correo</strong>.
+          Nombres y Apellidos son obligatorios; el resto es opcional. Si el archivo no tiene
+          estas columnas, se rechaza con un aviso — no se importa nada a medias.
+        </p>
+
+        <div class="fila-campos">
+          <button type="button" class="boton-secundario" (click)="descargarPlantillaImportacion()">
+            Descargar plantilla de ejemplo
+          </button>
+        </div>
+
+        <div class="campo">
+          <label for="archivoImportar">Archivo (.xlsx)</label>
+          <input
+            id="archivoImportar"
+            type="file"
+            accept=".xlsx"
+            [disabled]="importando()"
+            (change)="seleccionarArchivoImportar($event)"
+          />
+        </div>
+
+        @if (importando()) {
+          <p class="ayuda">Importando…</p>
+        }
+
+        @if (resultadoImportacion(); as resultado) {
+          <div [class.alerta-exito]="resultado.errores.length === 0" [class.alerta-advertencia]="resultado.errores.length > 0">
+            <p>
+              <strong>{{ resultado.creados }}</strong> de {{ resultado.totalFilas }}
+              miembro{{ resultado.totalFilas === 1 ? '' : 's' }} importado{{ resultado.creados === 1 ? '' : 's' }} correctamente.
+            </p>
+            @if (resultado.errores.length > 0) {
+              <p class="ayuda">No se pudieron importar estas filas:</p>
+              <ul class="lista-errores-importacion">
+                @for (err of resultado.errores; track err.fila) {
+                  <li>Fila {{ err.fila }}: {{ err.mensaje }}</li>
+                }
+              </ul>
+            }
+          </div>
+        }
+
+        <div class="fila-campos">
+          <button type="button" class="boton-secundario" (click)="cerrarImportar()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (mostrarFormulario()) {
+    <div class="modal-fondo" (click)="cerrarModal()">
+      <form class="tarjeta modal-contenido" (ngSubmit)="guardar()" (click)="$event.stopPropagation()">
+        <h2>{{ miembroEnEdicionId() === null ? 'Nuevo miembro' : 'Editar miembro' }}</h2>
+        <div class="fila-campos">
+          <div class="campo">
+            <label for="nombres">Nombres</label>
+            <input id="nombres" name="nombres" type="text" [(ngModel)]="nombres" required maxlength="100" />
+          </div>
+          <div class="campo">
+            <label for="apellidos">Apellidos</label>
+            <input id="apellidos" name="apellidos" type="text" [(ngModel)]="apellidos" required maxlength="100" />
+          </div>
+        </div>
+        <div class="fila-campos">
+          <div class="campo">
+            <label for="documento">Documento de identidad (opcional)</label>
+            <input id="documento" name="documento" type="text" [(ngModel)]="documentoIdentidad" maxlength="30" />
+          </div>
+          <div class="campo">
+            <label for="telefono">Teléfono (opcional)</label>
+            <input id="telefono" name="telefono" type="text" [(ngModel)]="telefono" maxlength="30" />
+          </div>
+        </div>
+        <div class="campo">
+          <label for="email">Correo (opcional)</label>
+          <input id="email" name="email" type="email" [(ngModel)]="email" maxlength="150" />
+        </div>
+        <div class="fila-campos">
+          <button type="submit" class="boton-primario">
+            {{ miembroEnEdicionId() === null ? 'Crear miembro' : 'Guardar cambios' }}
+          </button>
+          <button type="button" class="boton-secundario" (click)="cerrarModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <div class="tarjeta tarjeta-tabla">
+    <div class="encabezado-pagina encabezado-tabla">
+      <div class="campo-busqueda">
+        <input
+          type="text"
+          placeholder="Buscar por nombre, apellido o documento…"
+          [(ngModel)]="busqueda"
+          (keyup.enter)="buscar()"
+        />
+        <button type="button" class="boton-secundario" (click)="buscar()">Buscar</button>
+      </div>
+
+      <label class="filtro-casilla">
+        <input type="checkbox" [ngModel]="mostrarInactivos()" (ngModelChange)="alternarMostrarInactivos()" />
+        Mostrar inactivos
+      </label>
+    </div>
+
+    @if (cargando()) {
+      <p class="ayuda">Cargando…</p>
+    } @else if (miembros().length === 0) {
+      <p class="ayuda">No se encontraron miembros.</p>
+    } @else {
+      <div class="tabla-scroll">
+        <table mat-table [dataSource]="miembros()" class="tabla-material">
+          <ng-container matColumnDef="nombreCompleto">
+            <th mat-header-cell *matHeaderCellDef>Nombre completo</th>
+            <td mat-cell *matCellDef="let miembro">{{ miembro.apellidos }}, {{ miembro.nombres }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="documento">
+            <th mat-header-cell *matHeaderCellDef>Documento</th>
+            <td mat-cell *matCellDef="let miembro">{{ miembro.documentoIdentidad || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="telefono">
+            <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+            <td mat-cell *matCellDef="let miembro">{{ miembro.telefono || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="correo">
+            <th mat-header-cell *matHeaderCellDef>Correo</th>
+            <td mat-cell *matCellDef="let miembro">{{ miembro.email || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let miembro">{{ miembro.activo ? 'Activo' : 'Desactivado' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let miembro">
+              <div class="acciones-tabla">
+                <a [routerLink]="['/miembros', miembro.id]" class="boton-icono" title="Ver aportes">
+                  <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6Z" />
+                    <circle cx="10" cy="10" r="2.2" />
+                  </svg>
+                </a>
+                <button type="button" class="boton-icono" title="Editar" (click)="abrirEdicion(miembro)">
+                  <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.4 3.4l3.2 3.2L6.3 17 2.5 17.5l.5-3.8L13.4 3.4Z" />
+                  </svg>
+                </button>
+                @if (miembro.activo) {
+                  <button type="button" class="boton-icono boton-icono-peligro" title="Eliminar" (click)="eliminar(miembro)">
+                    <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 6h12M8 6V4.5A1.5 1.5 0 0 1 9.5 3h1A1.5 1.5 0 0 1 12 4.5V6m1.5 0-.6 10.1a1.5 1.5 0 0 1-1.5 1.4h-2.8a1.5 1.5 0 0 1-1.5-1.4L5.5 6" />
+                    </svg>
+                  </button>
+                } @else {
+                  <button type="button" class="boton-icono boton-icono-exito" title="Activar" (click)="activar(miembro)">
+                    <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 10.5l4 4 8-9" />
+                    </svg>
+                  </button>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnasVisibles"></tr>
+          <tr mat-row *matRowDef="let fila; columns: columnasVisibles"></tr>
+        </table>
+      </div>
+
+      <div class="pie-tabla">
+        <div class="pie-tabla-info">
+          <label class="pie-tabla-tamano">
+            <span class="ayuda">Filas por página</span>
+            <select [ngModel]="tamanoPagina()" (ngModelChange)="cambiarTamanoPagina($event)">
+              @for (tamano of tamanosPagina; track tamano) {
+                <option [ngValue]="tamano">{{ tamano }}</option>
+              }
+            </select>
+          </label>
+          <span class="ayuda">
+            Mostrando del {{ rangoInicio }} al {{ rangoFin }} de un total de {{ totalRegistros() }} registros
+          </span>
+        </div>
+
+        <div class="paginacion-numerada">
+          <button type="button" class="boton-paginacion" [disabled]="pagina() <= 1" (click)="irAPagina(pagina() - 1)">
+            Anterior
+          </button>
+          @for (numero of paginasVisibles(); track $index) {
+            @if (numero === -1) {
+              <span class="paginacion-puntos">…</span>
+            } @else {
+              <button
+                type="button"
+                class="boton-paginacion"
+                [class.activo]="numero === pagina()"
+                (click)="irAPagina(numero)"
+              >
+                {{ numero }}
+              </button>
+            }
+          }
+          <button
+            type="button"
+            class="boton-paginacion"
+            [disabled]="pagina() >= totalPaginas()"
+            (click)="irAPagina(pagina() + 1)"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</section>

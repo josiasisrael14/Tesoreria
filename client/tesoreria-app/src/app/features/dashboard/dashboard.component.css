@@ -1,0 +1,196 @@
+.pagina-dashboard {
+  max-width: 1200px;
+}
+
+/* KPIs */
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 0;
+}
+
+.kpi-etiqueta {
+  font-size: 0.8rem;
+  color: var(--color-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.kpi-valor {
+  font-size: 1.6rem;
+  font-weight: 600;
+  font-variant-numeric: proportional-nums;
+  color: var(--color-texto);
+}
+
+.kpi-valor-negativo {
+  color: var(--color-mal);
+}
+
+.kpi-delta {
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.kpi-delta-positiva {
+  color: var(--color-bien);
+}
+
+.kpi-delta-negativa {
+  color: var(--color-mal);
+}
+
+.kpi-delta-contexto {
+  font-weight: 400;
+  color: var(--color-texto-suave);
+}
+
+/* Layout de dos columnas */
+
+.fila-dos-columnas {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.fila-dos-columnas > .tarjeta {
+  margin-bottom: 0;
+}
+
+/* Barras de ingresos por fondo */
+
+.barras-fondo {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.barra-fondo-fila {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.barra-fondo-etiqueta {
+  font-size: 0.85rem;
+  color: var(--color-texto);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra-fondo-pista {
+  height: 12px;
+  background: var(--color-acento-suave);
+  border-radius: 0 6px 6px 0;
+  overflow: hidden;
+}
+
+.barra-fondo-relleno {
+  height: 100%;
+  background: var(--color-acento);
+  border-radius: 0 4px 4px 0;
+  transition: width 0.3s ease;
+}
+
+.barra-fondo-valor {
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-texto-suave);
+  white-space: nowrap;
+}
+
+/* Progreso de campañas (meters) */
+
+.meters {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.meter-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.meter-monto {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-texto-suave);
+  white-space: nowrap;
+}
+
+.meter-pista {
+  height: 10px;
+  background: var(--color-acento-suave);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.meter-relleno {
+  height: 100%;
+  background: var(--color-acento);
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+/* Accesos rápidos */
+
+.accesos-rapidos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.acceso-rapido {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--color-superficie-2);
+  color: var(--color-texto);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.acceso-rapido:hover {
+  background: var(--color-acento-suave);
+  color: var(--color-acento);
+}
+
+@media (max-width: 900px) {
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .fila-dos-columnas {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .barra-fondo-fila {
+    grid-template-columns: 90px 1fr auto;
+  }
+}

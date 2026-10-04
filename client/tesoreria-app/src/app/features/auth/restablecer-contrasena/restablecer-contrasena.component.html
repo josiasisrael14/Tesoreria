@@ -1,0 +1,59 @@
+<div class="pagina-login">
+  <div class="tarjeta-login">
+    <div class="marca-login">
+      <span class="marca-icono">⛪</span>
+      <span>Tesorería</span>
+    </div>
+
+    <h1>Restablecer contraseña</h1>
+
+    @if (enlaceInvalido) {
+      <div class="alerta-error">
+        Este enlace no es válido o está incompleto. Pedí uno nuevo desde "¿Olvidaste tu contraseña?" en la pantalla
+        de inicio de sesión.
+      </div>
+      <a routerLink="/olvide-contrasena" class="enlace-volver">Pedir un enlace nuevo</a>
+    } @else if (completado()) {
+      <div class="alerta-exito">Tu contraseña se actualizó correctamente.</div>
+      <button type="button" class="boton-primario" (click)="irAIniciarSesion()">Iniciar sesión</button>
+    } @else {
+      <form class="formulario" (ngSubmit)="restablecer()">
+        @if (error()) {
+          <div class="alerta-error">{{ error() }}</div>
+        }
+
+        <div class="campo">
+          <label for="nuevaContrasena">Contraseña nueva</label>
+          <input
+            id="nuevaContrasena"
+            name="nuevaContrasena"
+            type="password"
+            [(ngModel)]="nuevaContrasena"
+            required
+            minlength="6"
+            autocomplete="new-password"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="confirmarContrasena">Confirmar contraseña</label>
+          <input
+            id="confirmarContrasena"
+            name="confirmarContrasena"
+            type="password"
+            [(ngModel)]="confirmarContrasena"
+            required
+            minlength="6"
+            autocomplete="new-password"
+          />
+        </div>
+
+        <button type="submit" class="boton-primario" [disabled]="cargando()">
+          {{ cargando() ? 'Guardando…' : 'Guardar contraseña' }}
+        </button>
+      </form>
+
+      <a routerLink="/login" class="enlace-volver">Volver a iniciar sesión</a>
+    }
+  </div>
+</div>

@@ -1,0 +1,128 @@
+<section class="pagina pagina-angosta">
+  <h1>{{ modoAporte() ? 'Registrar aporte' : 'Registrar ingreso' }}</h1>
+  @if (modoAporte()) {
+    <p class="ayuda">
+      Aporte de <strong>{{ nombreMiembroAporte() || 'este miembro' }}</strong> para la campaña
+      <strong>{{ nombreCampanaAporte() || 'seleccionada' }}</strong>.
+      <button type="button" class="enlace" (click)="salirDeModoAporte()">¿No es lo que buscabas? Usa el formulario completo</button>
+    </p>
+  } @else {
+    <p class="ayuda">Diezmos, ofrendas y ofrendas especiales recogidas en un culto.</p>
+  }
+
+  @if (error()) {
+    <div class="alerta-error">{{ error() }}</div>
+  }
+  @if (mensajeExito()) {
+    <div class="alerta-exito">
+      {{ mensajeExito() }}
+      <button type="button" class="enlace" (click)="irAlListado()">Ver listado →</button>
+    </div>
+  }
+
+  <form class="tarjeta formulario" (ngSubmit)="guardar()">
+    <div class="campo">
+      <label for="fecha">Fecha</label>
+      <input id="fecha" name="fecha" type="date" [(ngModel)]="fecha" required />
+    </div>
+
+    @if (!modoAporte()) {
+      <div class="campo">
+        <label for="fondo">Fondo</label>
+        <select id="fondo" name="fondo" [(ngModel)]="fondoId" (ngModelChange)="onFondoChange()" required>
+          <option [ngValue]="null" disabled>Selecciona un fondo…</option>
+          @for (fondo of fondos(); track fondo.id) {
+            <option [ngValue]="fondo.id">{{ fondo.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      @if (esFondoDeOfrendaEspecial()) {
+        <div class="campo">
+          <label for="ofrendaEspecial">Campaña</label>
+          <select id="ofrendaEspecial" name="ofrendaEspecial" [(ngModel)]="ofrendaEspecialId" required>
+            <option [ngValue]="null" disabled>Selecciona una campaña…</option>
+            @for (ofrenda of ofrendasEspeciales(); track ofrenda.id) {
+              <option [ngValue]="ofrenda.id">{{ ofrenda.nombre }}</option>
+            }
+          </select>
+          @if (ofrendasEspeciales().length === 0) {
+            <p class="ayuda">Todavía no hay campañas creadas — créala primero en "Ofrendas especiales".</p>
+          }
+        </div>
+      }
+
+      <div class="campo">
+        <label for="miembro">Miembro (opcional)</label>
+        <div class="autocompletar">
+          <input
+            id="miembro"
+            type="text"
+            autocomplete="off"
+            placeholder="— Ofrenda anónima — (escribí para buscar)"
+            [ngModel]="filtroMiembro()"
+            (ngModelChange)="onFiltroMiembroChange($event)"
+            name="filtroMiembro"
+            [ngModelOptions]="{ standalone: true }"
+            (focus)="mostrarListaMiembros.set(true)"
+            (blur)="mostrarListaMiembros.set(false)"
+          />
+          @if (miembroId !== null) {
+            <button
+              type="button"
+              class="autocompletar-limpiar"
+              title="Quitar miembro"
+              (mousedown)="$event.preventDefault()"
+              (click)="limpiarMiembro()"
+            >✕</button>
+          }
+          @if (mostrarListaMiembros()) {
+            <ul class="autocompletar-lista">
+              <li (mousedown)="$event.preventDefault()" (click)="seleccionarMiembro(null)">— Ofrenda anónima —</li>
+              @for (miembro of miembrosFiltrados(); track miembro.id) {
+                <li (mousedown)="$event.preventDefault()" (click)="seleccionarMiembro(miembro)">
+                  {{ miembro.apellidos }}, {{ miembro.nombres }}
+                </li>
+              }
+              @if (miembrosFiltrados().length === 0) {
+                <li class="autocompletar-vacio">No se encontraron miembros con ese nombre.</li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+
+    }
+
+    <div class="fila-campos">
+      <div class="campo">
+        <label for="monto">Monto</label>
+        <input id="monto" name="monto" type="number" min="0.01" step="0.01" [(ngModel)]="monto" required class="monto" />
+      </div>
+
+      <div class="campo">
+        <label for="medioPago">Medio de pago</label>
+        <select id="medioPago" name="medioPago" [(ngModel)]="medioPago">
+          <option value="Efectivo">Efectivo</option>
+          <option value="Transferencia">Transferencia</option>
+          <option value="Deposito">Depósito</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="concepto">Concepto (opcional)</label>
+      <input id="concepto" name="concepto" type="text" [(ngModel)]="concepto" maxlength="400" />
+    </div>
+
+    <div class="campo">
+      <label for="comprobante">N° de comprobante (opcional)</label>
+      <input id="comprobante" name="comprobante" type="text" [(ngModel)]="numeroComprobante" maxlength="50" />
+    </div>
+
+    <button type="submit" class="boton-primario boton-grande" [disabled]="guardando()">
+      {{ guardando() ? 'Guardando…' : (modoAporte() ? 'Registrar aporte' : 'Registrar ingreso') }}
+    </button>
+  </form>
+</section>

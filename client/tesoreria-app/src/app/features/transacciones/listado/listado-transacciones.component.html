@@ -1,0 +1,181 @@
+<section class="pagina">
+  <div class="encabezado-pagina">
+    <div>
+      <h1>Transacciones</h1>
+      <p class="ayuda">Todos los ingresos y egresos registrados.</p>
+    </div>
+    <a routerLink="/transacciones/nuevo-ingreso" class="boton-primario">+ Registrar ingreso</a>
+  </div>
+
+  @if (error()) {
+    <div class="alerta-error">{{ error() }}</div>
+  }
+
+  <div class="tarjeta filtros">
+    <div class="campo">
+      <label for="filtroAnio">Filtrar por año</label>
+      <select id="filtroAnio" name="filtroAnio" [(ngModel)]="filtroAnio" (ngModelChange)="aplicarFiltro()">
+        <option [ngValue]="null">Todos los años</option>
+        @for (anio of aniosDisponibles; track anio) {
+          <option [ngValue]="anio">{{ anio }}</option>
+        }
+      </select>
+    </div>
+    <div class="campo">
+      <label for="filtroFondo">Filtrar por fondo</label>
+      <select id="filtroFondo" name="filtroFondo" [(ngModel)]="filtroFondoId" (ngModelChange)="aplicarFiltro()">
+        <option [ngValue]="null">Todos los fondos</option>
+        @for (fondo of fondos(); track fondo.id) {
+          <option [ngValue]="fondo.id">{{ fondo.nombre }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (mostrarEdicion()) {
+    <div class="modal-fondo" (click)="cerrarEdicion()">
+      <form class="tarjeta modal-contenido" (ngSubmit)="guardarEdicion()" (click)="$event.stopPropagation()">
+        <h2>Editar {{ editEsIngreso() ? 'ingreso' : 'egreso' }}</h2>
+
+        <div class="campo">
+          <label for="editFecha">Fecha</label>
+          <input id="editFecha" name="editFecha" type="date" [(ngModel)]="editFecha" required />
+        </div>
+
+        <div class="campo">
+          <label for="editFondo">Fondo</label>
+          <select id="editFondo" name="editFondo" [(ngModel)]="editFondoId" (ngModelChange)="onEditFondoChange()" required>
+            <option [ngValue]="null" disabled>Selecciona un fondo…</option>
+            @for (fondo of fondos(); track fondo.id) {
+              <option [ngValue]="fondo.id">{{ fondo.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        @if (editEsIngreso() && editEsFondoDeOfrendaEspecial()) {
+          <div class="campo">
+            <label for="editOfrendaEspecial">Campaña</label>
+            <select id="editOfrendaEspecial" name="editOfrendaEspecial" [(ngModel)]="editOfrendaEspecialId" required>
+              <option [ngValue]="null" disabled>Selecciona una campaña…</option>
+              @for (ofrenda of ofrendasEspeciales(); track ofrenda.id) {
+                <option [ngValue]="ofrenda.id">{{ ofrenda.nombre }}</option>
+              }
+            </select>
+          </div>
+        }
+
+        @if (editEsIngreso()) {
+          <div class="campo">
+            <label for="editMiembro">Miembro (opcional)</label>
+            <select id="editMiembro" name="editMiembro" [(ngModel)]="editMiembroId">
+              <option [ngValue]="null">— Ofrenda anónima —</option>
+              @for (miembro of miembros(); track miembro.id) {
+                <option [ngValue]="miembro.id">{{ miembro.apellidos }}, {{ miembro.nombres }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="editCulto">Culto (opcional)</label>
+            <select id="editCulto" name="editCulto" [(ngModel)]="editCultoId">
+              <option [ngValue]="null">— Sin culto asociado —</option>
+              @for (culto of cultos(); track culto.id) {
+                <option [ngValue]="culto.id">{{ culto.fecha | date: 'dd/MM/yyyy' }} — {{ culto.tipo }}</option>
+              }
+            </select>
+          </div>
+        }
+
+        <div class="fila-campos">
+          <div class="campo">
+            <label for="editMonto">Monto</label>
+            <input
+              id="editMonto"
+              name="editMonto"
+              type="number"
+              min="0.01"
+              step="0.01"
+              [(ngModel)]="editMonto"
+              required
+              class="monto"
+            />
+          </div>
+
+          <div class="campo">
+            <label for="editMedioPago">Medio de pago</label>
+            <select id="editMedioPago" name="editMedioPago" [(ngModel)]="editMedioPago">
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Deposito">Depósito</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="editConcepto">Concepto{{ editEsIngreso() ? ' (opcional)' : '' }}</label>
+          <input id="editConcepto" name="editConcepto" type="text" [(ngModel)]="editConcepto" maxlength="400" />
+        </div>
+
+        <div class="campo">
+          <label for="editComprobante">N° de comprobante (opcional)</label>
+          <input id="editComprobante" name="editComprobante" type="text" [(ngModel)]="editNumeroComprobante" maxlength="50" />
+        </div>
+
+        <div class="fila-campos">
+          <button type="submit" class="boton-primario" [disabled]="guardandoEdicion()">
+            {{ guardandoEdicion() ? 'Guardando…' : 'Guardar cambios' }}
+          </button>
+          <button type="button" class="boton-secundario" (click)="cerrarEdicion()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <div class="tarjeta">
+    @if (cargando()) {
+      <p class="ayuda">Cargando…</p>
+    } @else if (transacciones().length === 0) {
+      <p class="ayuda">No hay transacciones que coincidan con el filtro.</p>
+    } @else {
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Fondo</th>
+            <th>Tipo</th>
+            <th>Monto</th>
+            <th>Medio</th>
+            <th>Miembro</th>
+            <th>Concepto</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of transacciones(); track t.id) {
+            <tr [class.fila-reversada]="t.reversada">
+              <td>{{ t.fecha | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ t.nombreFondo }}</td>
+              <td>
+                <span class="etiqueta" [class.etiqueta-ingreso]="t.tipoMovimiento === 'Ingreso'"
+                      [class.etiqueta-egreso]="t.tipoMovimiento === 'Egreso'">
+                  {{ t.tipoMovimiento }}
+                </span>
+                @if (t.esReversa) { <span class="etiqueta etiqueta-reversa">reversa</span> }
+              </td>
+              <td class="monto-celda">{{ t.monto | currency: 'PEN' : 'S/ ' }}</td>
+              <td>{{ t.medioPago }}</td>
+              <td>{{ t.nombreMiembro || '—' }}</td>
+              <td>{{ t.concepto || '—' }}</td>
+              <td>
+                @if (puedeEditar(t)) {
+                  <button type="button" class="boton-secundario" (click)="abrirEdicion(t)">Editar</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</section>

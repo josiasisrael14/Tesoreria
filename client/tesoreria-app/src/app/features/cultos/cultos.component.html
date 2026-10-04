@@ -1,0 +1,55 @@
+<section class="pagina">
+  <h1>Cultos</h1>
+  <p class="ayuda">Dominical, Misionero, Especial, Ayuno — para agrupar las ofrendas de un servicio.</p>
+
+  @if (error()) {
+    <div class="alerta-error">{{ error() }}</div>
+  }
+
+  <form class="tarjeta formulario" (ngSubmit)="crear()">
+    <h2>Nuevo culto</h2>
+    <div class="campo">
+      <label for="fecha">Fecha</label>
+      <input id="fecha" name="fecha" type="date" [(ngModel)]="fecha" required />
+    </div>
+    <div class="campo">
+      <label for="tipo">Tipo</label>
+      <select id="tipo" name="tipo" [(ngModel)]="tipo">
+        <option value="Dominical">Dominical</option>
+        <option value="Misionero">Misionero</option>
+        <option value="Especial">Especial</option>
+        <option value="Ayuno">Ayuno</option>
+        <option value="Otro">Otro</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="descripcion">Descripción (opcional)</label>
+      <input id="descripcion" name="descripcion" type="text" [(ngModel)]="descripcion" maxlength="400" />
+    </div>
+    <button type="submit" class="boton-primario">Crear culto</button>
+  </form>
+
+  <div class="tarjeta">
+    <h2>Cultos registrados</h2>
+    @if (cargando()) {
+      <p class="ayuda">Cargando…</p>
+    } @else if (cultos().length === 0) {
+      <p class="ayuda">Todavía no hay cultos registrados.</p>
+    } @else {
+      <table class="tabla">
+        <thead>
+          <tr><th>Fecha</th><th>Tipo</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          @for (culto of cultos(); track culto.id) {
+            <tr>
+              <td>{{ culto.fecha | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ culto.tipo }}</td>
+              <td>{{ culto.descripcion || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</section>

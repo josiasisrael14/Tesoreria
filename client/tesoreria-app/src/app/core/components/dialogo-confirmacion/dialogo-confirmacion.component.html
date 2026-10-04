@@ -1,0 +1,21 @@
+@if (servicio.visible() && servicio.estado(); as estado) {
+  <div class="modal-fondo" (click)="servicio.cancelar()">
+    <div class="tarjeta modal-contenido modal-confirmacion" (click)="$event.stopPropagation()">
+      <h2>{{ estado.titulo }}</h2>
+      <p class="ayuda modal-confirmacion-mensaje">{{ estado.mensaje }}</p>
+      <div class="fila-campos">
+        <button
+          type="button"
+          class="boton-primario"
+          [class.boton-primario-peligro]="estado.peligro"
+          (click)="servicio.confirmar()"
+        >
+          {{ estado.textoConfirmar }}
+        </button>
+        <button type="button" class="boton-secundario" (click)="servicio.cancelar()">
+          {{ estado.textoCancelar }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,33 @@
+# .NET
+bin/
+obj/
+*.user
+
+# Angular / Node
+client/tesoreria-app/node_modules/
+client/tesoreria-app/dist/
+client/tesoreria-app/.angular/
+
+# El build de Angular copiado a wwwroot no se versiona: se regenera con build-frontend.ps1
+src/Tesoreria.Api/wwwroot/*
+
+# IDE
+.vs/
+.vscode/
+*.suo
+
+# Configuración con secretos reales (contraseñas, clave JWT, Gmail).
+# Cada entorno tiene la suya: la de tu PC y la del hosting no se suben a GitHub.
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Local.json
+
+# Por si algún día usás variables en archivos o certificados
+.env
+.env.*
+*.pfx
+
+# Basura común
+*.log
+.idea/
+Thumbs.db

@@ -1,0 +1,51 @@
+<section class="pagina">
+  <h1>Balance por fondo</h1>
+  <p class="ayuda">Cuánto entró y salió de cada fondo en el período seleccionado.</p>
+
+  @if (error()) {
+    <div class="alerta-error">{{ error() }}</div>
+  }
+
+  <div class="tarjeta filtros">
+    <div class="campo">
+      <label for="desde">Desde</label>
+      <input id="desde" name="desde" type="date" [(ngModel)]="desde" (ngModelChange)="consultar()" />
+    </div>
+    <div class="campo">
+      <label for="hasta">Hasta</label>
+      <input id="hasta" name="hasta" type="date" [(ngModel)]="hasta" (ngModelChange)="consultar()" />
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    @if (cargando()) {
+      <p class="ayuda">Calculando…</p>
+    } @else if (balance().length === 0) {
+      <p class="ayuda">No hay movimientos en este período.</p>
+    } @else {
+      <table class="tabla">
+        <thead>
+          <tr><th>Fondo</th><th>Ingresos</th><th>Egresos</th><th>Saldo</th></tr>
+        </thead>
+        <tbody>
+          @for (item of balance(); track item.fondoId) {
+            <tr>
+              <td>{{ item.nombreFondo }}</td>
+              <td class="monto-celda etiqueta-ingreso">{{ item.totalIngresos | currency: 'PEN' : 'S/ ' }}</td>
+              <td class="monto-celda etiqueta-egreso">{{ item.totalEgresos | currency: 'PEN' : 'S/ ' }}</td>
+              <td class="monto-celda"><strong>{{ item.saldo | currency: 'PEN' : 'S/ ' }}</strong></td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td><strong>Total</strong></td>
+            <td class="monto-celda etiqueta-ingreso"><strong>{{ totalIngresos | currency: 'PEN' : 'S/ ' }}</strong></td>
+            <td class="monto-celda etiqueta-egreso"><strong>{{ totalEgresos | currency: 'PEN' : 'S/ ' }}</strong></td>
+            <td class="monto-celda"><strong>{{ (totalIngresos - totalEgresos) | currency: 'PEN' : 'S/ ' }}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+    }
+  </div>
+</section>

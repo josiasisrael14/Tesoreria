@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tesoreria.Domain\Tesoreria.Domain.csproj" />
+    <ProjectReference Include="..\Tesoreria.Application\Tesoreria.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0" />
+    <!-- Login y usuarios: Identity con EF Core, la librería que firma/lee tokens JWT, y el paquete
+         que agrega el overload de Configure<T>(IConfiguration) que uso para leer "Jwt" y "AdminInicial". -->
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
+    <!-- Envío de correo (recuperación de contraseña) por SMTP. -->
+    <PackageReference Include="MailKit" Version="4.9.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Este proyecto es una librería de clases común (Sdk="Microsoft.NET.Sdk"), así que por
+         defecto solo ve los tipos "genéricos" de Identity (UserManager, IdentityRole, etc.),
+         que llegan por el paquete NuGet de arriba. DataProtectionTokenProviderOptions (usado
+         para la duración del enlace de "olvidé mi contraseña") vive en cambio en el ensamblado
+         Microsoft.AspNetCore.Identity, que es parte del framework compartido de ASP.NET Core y
+         no se distribuye como paquete NuGet aparte — de ahí el error CS0246 al compilar. Esta
+         referencia lo habilita; no agrega nada al despliegue porque el único proyecto que usa
+         esta librería (Tesoreria.Api) ya corre sobre ese mismo framework compartido. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Tesoreria.Api/Tesoreria.Api.csproj" />
+    <Project Path="src/Tesoreria.Application/Tesoreria.Application.csproj" />
+    <Project Path="src/Tesoreria.Domain/Tesoreria.Domain.csproj" />
+    <Project Path="src/Tesoreria.Infrastructure/Tesoreria.Infrastructure.csproj" />
+  </Folder>
+</Solution>

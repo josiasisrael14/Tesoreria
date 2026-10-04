@@ -1,0 +1,179 @@
+<section class="pagina">
+  <div class="encabezado-pagina">
+    <div>
+      <h1>{{ historial()?.nombreMiembro || 'Aportes del miembro' }}</h1>
+      <p class="ayuda">Diezmos, ofrenda general y ofrendas especiales dadas por este miembro.</p>
+    </div>
+    <a routerLink="/miembros" class="boton-secundario">← Volver a miembros</a>
+  </div>
+
+  @if (error()) {
+    <div class="alerta-error">{{ error() }}</div>
+  }
+
+  <div class="tarjeta">
+    <h2>Detalle por período</h2>
+    <div class="filtros">
+      <div class="campo">
+        <label for="mes">Mes</label>
+        <input
+          id="mes"
+          type="month"
+          [ngModel]="mes()"
+          (ngModelChange)="cambiarMes($event)"
+        />
+      </div>
+      <div class="campo">
+        <label for="fondoFiltro">Fondo</label>
+        <select
+          id="fondoFiltro"
+          [ngModel]="fondoIdFiltro()"
+          (ngModelChange)="cambiarFondoFiltro($event)"
+        >
+          <option [ngValue]="null">Todos los fondos</option>
+          @for (fondo of fondos(); track fondo.id) {
+            <option [ngValue]="fondo.id">{{ fondo.nombre }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    @if (cargandoDetalle()) {
+      <p class="ayuda">Cargando…</p>
+    } @else if (detalle().length === 0) {
+      <p class="ayuda">Sin aportes en el período seleccionado.</p>
+    } @else {
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Fondo</th>
+            <th>Monto</th>
+            <th>Medio</th>
+            <th>Concepto</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of detallePaginado(); track t.id) {
+            <tr [class.fila-reversada]="t.reversada">
+              <td>{{ t.fecha | date: 'dd/MM/yyyy' }}</td>
+              <td>
+                {{ t.nombreFondo }}
+                @if (t.tipoMovimiento === 'Egreso') {
+                  <span class="etiqueta etiqueta-reversa">reversa</span>
+                }
+              </td>
+              <td class="monto-celda">{{ t.monto | currency: 'PEN' : 'S/ ' }}</td>
+              <td>{{ t.medioPago }}</td>
+              <td>{{ t.concepto || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2"><strong>Total del período</strong></td>
+            <td class="monto-celda"><strong>{{ totalDetalle() | currency: 'PEN' : 'S/ ' }}</strong></td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="pie-tabla">
+        <div class="pie-tabla-info">
+          <label class="pie-tabla-tamano">
+            <span class="ayuda">Filas por página</span>
+            <select [ngModel]="tamanoPaginaDetalle()" (ngModelChange)="cambiarTamanoPaginaDetalle($event)">
+              @for (tamano of tamanosPaginaDetalle; track tamano) {
+                <option [ngValue]="tamano">{{ tamano }}</option>
+              }
+            </select>
+          </label>
+          <span class="ayuda">
+            Mostrando del {{ rangoInicioDetalle }} al {{ rangoFinDetalle }} de un total de {{ detalle().length }} registros
+          </span>
+        </div>
+
+        <div class="paginacion-numerada">
+          <button
+            type="button"
+            class="boton-paginacion"
+            [disabled]="paginaDetalle() <= 1"
+            (click)="irAPaginaDetalle(paginaDetalle() - 1)"
+          >
+            Anterior
+          </button>
+          @for (numero of paginasVisiblesDetalle(); track $index) {
+            @if (numero === -1) {
+              <span class="paginacion-puntos">…</span>
+            } @else {
+              <button
+                type="button"
+                class="boton-paginacion"
+                [class.activo]="numero === paginaDetalle()"
+                (click)="irAPaginaDetalle(numero)"
+              >
+                {{ numero }}
+              </button>
+            }
+          }
+          <button
+            type="button"
+            class="boton-paginacion"
+            [disabled]="paginaDetalle() >= totalPaginasDetalle()"
+            (click)="irAPaginaDetalle(paginaDetalle() + 1)"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="tarjeta">
+    <h2>Por fondo <span class="ayuda contador-titulo">(en el período seleccionado)</span></h2>
+    @if (aportesPorFondoPeriodo().length === 0) {
+      <p class="ayuda">Sin aportes en el período seleccionado.</p>
+    } @else {
+      <table class="tabla">
+        <thead>
+          <tr><th>Fondo</th><th>Total dado</th></tr>
+        </thead>
+        <tbody>
+          @for (aporte of aportesPorFondoPeriodo(); track aporte.id) {
+            <tr>
+              <td>{{ aporte.nombre }}</td>
+              <td class="monto-celda">{{ aporte.total | currency: 'PEN' : 'S/ ' }}</td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td><strong>Total del período</strong></td>
+            <td class="monto-celda"><strong>{{ totalDetalle() | currency: 'PEN' : 'S/ ' }}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+    }
+  </div>
+
+  <div class="tarjeta">
+    <h2>Por campaña de ofrenda especial <span class="ayuda contador-titulo">(en el período seleccionado)</span></h2>
+    @if (aportesPorOfrendaEspecialPeriodo().length === 0) {
+      <p class="ayuda">Sin aportes a campañas de ofrenda especial en el período seleccionado.</p>
+    } @else {
+      <table class="tabla">
+        <thead>
+          <tr><th>Campaña</th><th>Total dado</th></tr>
+        </thead>
+        <tbody>
+          @for (aporte of aportesPorOfrendaEspecialPeriodo(); track aporte.id) {
+            <tr>
+              <td>{{ aporte.nombre }}</td>
+              <td class="monto-celda">{{ aporte.total | currency: 'PEN' : 'S/ ' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</section>

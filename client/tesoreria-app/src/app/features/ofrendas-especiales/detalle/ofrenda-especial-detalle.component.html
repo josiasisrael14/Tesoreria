@@ -1,0 +1,154 @@
+<section class="pagina">
+  <div class="encabezado-pagina">
+    <div>
+      <h1>{{ campana() ? campana()!.nombre + ' ' + campana()!.anio : 'Campaña' }}</h1>
+      @if (campana(); as c) {
+        @if (c.fechaFin) {
+          <p class="ayuda">Plazo para dar: hasta el {{ c.fechaFin | date: 'dd/MM/yyyy' }}. Después de esa fecha, quien no haya completado su compromiso queda en mora.</p>
+        } @else {
+          <p class="ayuda">Esta campaña no tiene una fecha límite ("Vigencia hasta"), así que ningún compromiso puede quedar en mora todavía.</p>
+        }
+      }
+    </div>
+    <div class="fila-campos">
+      <a routerLink="/ofrendas-especiales" class="boton-secundario">← Campañas</a>
+      <button type="button" class="boton-primario" (click)="abrirNuevo()">+ Registrar compromiso</button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alerta-error">{{ error() }}</div>
+  }
+
+  @if (fondoEspecialId() === null) {
+    <div class="alerta-error">
+      Todavía no hay ningún fondo marcado como "de Ofrendas Especiales", así que "Registrar aporte" no va a
+      funcionar bien. Ve a <a routerLink="/fondos">Fondos</a> y marca esa casilla en el fondo que corresponda.
+    </div>
+  }
+
+  @if (mostrarFormulario()) {
+    <div class="modal-fondo" (click)="cerrarModal()">
+      <form class="tarjeta modal-contenido" (ngSubmit)="guardar()" (click)="$event.stopPropagation()">
+        <h2>{{ compromisoEnEdicionId() === null ? 'Registrar compromiso' : 'Editar compromiso' }}</h2>
+
+        @if (compromisoEnEdicionId() === null) {
+          <div class="campo">
+            <label for="miembro">Miembro</label>
+            <select id="miembro" name="miembro" [(ngModel)]="miembroId" required>
+              <option [ngValue]="null" disabled>Selecciona un miembro…</option>
+              @for (miembro of miembrosDisponibles(); track miembro.id) {
+                <option [ngValue]="miembro.id">{{ miembro.apellidos }}, {{ miembro.nombres }}</option>
+              }
+            </select>
+            @if (miembrosDisponibles().length === 0) {
+              <p class="ayuda">Todos los miembros cargados ya tienen un compromiso registrado en esta campaña.</p>
+            }
+          </div>
+        } @else {
+          <div class="campo">
+            <label>Miembro</label>
+            <p>{{ nombreMiembroEnEdicion() }}</p>
+          </div>
+        }
+
+        <div class="campo">
+          <label for="montoComprometido">Monto comprometido</label>
+          <input
+            id="montoComprometido"
+            name="montoComprometido"
+            type="number"
+            min="0.01"
+            step="0.01"
+            [(ngModel)]="montoComprometido"
+            required
+            class="monto"
+          />
+        </div>
+
+        <div class="fila-campos">
+          <button type="submit" class="boton-primario">
+            {{ compromisoEnEdicionId() === null ? 'Registrar' : 'Guardar cambios' }}
+          </button>
+          <button type="button" class="boton-secundario" (click)="cerrarModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <div class="tarjeta tarjeta-tabla">
+    <div class="encabezado-pagina encabezado-tabla">
+      <h2>
+        Compromisos
+        @if (compromisos().length > 0) {
+          <span class="ayuda contador-titulo">({{ compromisos().length }})</span>
+        }
+      </h2>
+      @if (compromisos().length > 0) {
+        <p class="ayuda">
+          Comprometido: {{ totalComprometido() | currency: 'PEN' : 'S/ ' }} · Dado: {{ totalDado() | currency: 'PEN' : 'S/ ' }}
+          @if (cantidadEnMora() > 0) {
+            · {{ cantidadEnMora() }} en mora
+          }
+        </p>
+      }
+    </div>
+
+    @if (cargando()) {
+      <p class="ayuda">Cargando…</p>
+    } @else if (compromisos().length === 0) {
+      <p class="ayuda">Todavía no hay compromisos registrados en esta campaña.</p>
+    } @else {
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Miembro</th>
+            <th>Comprometido</th>
+            <th>Dado</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (compromiso of compromisos(); track compromiso.id) {
+            <tr>
+              <td>{{ compromiso.nombreMiembro }}</td>
+              <td class="monto-celda">{{ compromiso.montoComprometido | currency: 'PEN' : 'S/ ' }}</td>
+              <td class="monto-celda">{{ compromiso.montoDado | currency: 'PEN' : 'S/ ' }}</td>
+              <td>
+                <span class="etiqueta" [ngClass]="claseEstado(compromiso.estado)">
+                  {{ etiquetaEstado(compromiso.estado) }}
+                </span>
+              </td>
+              <td>
+                <div class="acciones-tabla">
+                  <a
+                    class="boton-secundario"
+                    routerLink="/transacciones/nuevo-ingreso"
+                    [queryParams]="{
+                      miembroId: compromiso.miembroId,
+                      fondoId: fondoEspecialId(),
+                      ofrendaEspecialId: compromiso.ofrendaEspecialId
+                    }"
+                  >
+                    Registrar aporte
+                  </a>
+                  <button type="button" class="boton-icono" title="Editar" (click)="abrirEdicion(compromiso)">
+                    <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M13.4 3.4l3.2 3.2L6.3 17 2.5 17.5l.5-3.8L13.4 3.4Z" />
+                    </svg>
+                  </button>
+                  <button type="button" class="boton-icono boton-icono-peligro" title="Eliminar" (click)="eliminar(compromiso)">
+                    <svg class="icono-nav" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 6h12M8 6V4.5A1.5 1.5 0 0 1 9.5 3h1A1.5 1.5 0 0 1 12 4.5V6m1.5 0-.6 10.1a1.5 1.5 0 0 1-1.5 1.4h-2.8a1.5 1.5 0 0 1-1.5-1.4L5.5 6" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</section>

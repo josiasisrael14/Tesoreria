@@ -1,0 +1,37 @@
+.pagina-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-superficie-2);
+  padding: 16px;
+}
+
+.tarjeta-login {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.marca-login {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--color-texto-suave);
+}
+
+.marca-icono {
+  font-size: 1.1rem;
+}
+
+.tarjeta-login h1 {
+  margin: 0;
+  font-size: 1.3rem;
+}

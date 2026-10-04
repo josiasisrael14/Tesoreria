@@ -1,0 +1,266 @@
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+
+.barra-lateral {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--color-superficie);
+  border-right: 1px solid var(--color-borde);
+  padding: 22px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow: hidden;
+  transition: width 0.18s ease, padding 0.18s ease, opacity 0.12s ease;
+}
+
+/* Al ocultar el menú, el panel de la derecha (con la tabla) pasa a ocupar
+   todo el ancho — no se "esconde" con display:none porque eso cortaría la
+   transición; se colapsa a 0 y su contenido queda invisible. */
+.barra-lateral-oculta {
+  width: 0;
+  padding-left: 0;
+  padding-right: 0;
+  border-right: none;
+  opacity: 0;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.marca-logo {
+  height: 28px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.marca-texto {
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.barra-lateral nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.barra-lateral nav a {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: var(--color-texto-suave);
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.icono-nav {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.barra-lateral nav a:hover {
+  background: var(--color-superficie-2);
+  color: var(--color-texto);
+}
+
+.barra-lateral nav a:hover .icono-nav {
+  opacity: 1;
+}
+
+.barra-lateral nav a.activo {
+  background: var(--color-acento-suave);
+  color: var(--color-acento);
+  font-weight: 600;
+}
+
+.barra-lateral nav a.activo .icono-nav {
+  opacity: 1;
+}
+
+/* Panel principal: barra superior + contenido */
+
+.panel-principal {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.barra-superior {
+  height: 64px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  background: var(--color-fondo);
+  border-bottom: 1px solid var(--color-borde);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.barra-superior-izquierda {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.barra-superior-titulo {
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+/* Botón hamburguesa: mismo look que .boton-icono, un poco más grande para
+   que sea fácil de encontrar en la esquina de la barra superior. */
+.boton-menu {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.boton-menu .icono-nav {
+  width: 18px;
+  height: 18px;
+}
+
+/* Menú de usuario */
+
+.menu-usuario {
+  position: relative;
+}
+
+.menu-usuario-boton {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: none;
+  background: none;
+  padding: 6px 8px 6px 6px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--color-texto);
+}
+
+.menu-usuario-boton:hover {
+  background: var(--color-superficie-2);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-acento);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.menu-usuario-nombre {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.icono-flecha {
+  width: 14px;
+  height: 14px;
+  color: var(--color-texto-suave);
+  transition: transform 0.15s ease;
+}
+
+.icono-flecha-abierta {
+  transform: rotate(180deg);
+}
+
+.menu-usuario-desplegable {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: white;
+  border: 1px solid var(--color-borde);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(33, 38, 47, 0.1);
+  min-width: 190px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menu-usuario-item {
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 9px 10px;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  color: var(--color-texto-suave);
+  cursor: not-allowed;
+}
+
+/* A diferencia de "Mi perfil" (todavía no implementado), "Cerrar sesión" sí
+   funciona: se ve y se comporta como un botón normal, no como deshabilitado. */
+.menu-usuario-item-activo {
+  color: var(--color-texto);
+  cursor: pointer;
+}
+
+.menu-usuario-item-activo:hover {
+  background: var(--color-superficie-2);
+}
+
+.contenido {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 32px;
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .barra-lateral {
+    width: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--color-borde);
+    padding: 16px 14px;
+    gap: 14px;
+  }
+
+  .barra-lateral nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .barra-superior {
+    padding: 0 16px;
+  }
+
+  .menu-usuario-nombre {
+    display: none;
+  }
+
+  .contenido {
+    padding: 18px 16px;
+  }
+}

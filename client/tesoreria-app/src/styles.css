@@ -1,0 +1,964 @@
+:root {
+  --color-fondo: #fbfaf6;
+  --color-superficie: #f2efe8;
+  --color-superficie-2: #ece7db;
+  --color-texto: #21262f;
+  --color-texto-suave: #5b6472;
+  --color-borde: #ddd7c9;
+  --color-acento: #7a2a38;
+  --color-acento-suave: #f3e3e1;
+  --color-bien: #2f6b45;
+  --color-mal: #a1462a;
+  --color-advertencia: #b5811f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin: 0 0 4px;
+}
+
+h2 {
+  font-size: 1.05rem;
+  margin: 0 0 16px;
+}
+
+.ayuda {
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+  margin: 0 0 24px;
+}
+
+.pagina {
+  /* Antes tenía max-width: 960px, que encajonaba TODA la página (título,
+     tarjetas, tabla) en una columna angosta sin importar el ancho de la
+     pantalla — ese era el "marco". Ahora ocupa el 100% del espacio
+     disponible junto al menú lateral. */
+  max-width: 100%;
+}
+
+.pagina-angosta {
+  max-width: 560px;
+}
+
+.encabezado-pagina {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* Título de página con un ícono al lado (ej. "Miembros"), para que se entienda de un
+   vistazo de qué se trata la pantalla sin depender solo del texto. */
+.titulo-con-icono {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.icono-titulo-pagina {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--color-acento-suave);
+  color: var(--color-acento);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icono-titulo-pagina .icono-nav {
+  width: 22px;
+  height: 22px;
+  opacity: 1;
+}
+
+/* Fila de botones de ícono en el encabezado de una página (ej. "Exportar" + "Nuevo miembro"). */
+.acciones-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tarjeta {
+  background: white;
+  border: 1px solid var(--color-borde);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 2px rgba(33, 38, 47, 0.04), 0 2px 8px rgba(33, 38, 47, 0.05);
+}
+
+/* Tarjeta que envuelve una tabla/listado: con caja propia (borde, esquinas
+   redondeadas y sombra suave), igual que cualquier panel de datos — la barra
+   de acciones, la tabla y la paginación quedan "encerradas" en un solo bloque
+   en vez de flotar sueltas sobre el fondo de la página. */
+.tarjeta-tabla {
+  background: white;
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(33, 38, 47, 0.04), 0 2px 8px rgba(33, 38, 47, 0.05);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+
+.tarjeta-tabla .encabezado-tabla {
+  margin-bottom: 18px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Modal de "Nuevo miembro": el formulario flota sobre la página (fondo
+   oscurecido detrás) en vez de empujar la tabla hacia abajo. Se cierra con
+   clic afuera, la tecla Escape o el botón "Cancelar". */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(33, 38, 47, 0.45);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 16px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.modal-contenido {
+  width: 100%;
+  max-width: 520px;
+  margin: 0;
+  animation: modal-entrada 0.15s ease-out;
+}
+
+@keyframes modal-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Diálogo de confirmación (reemplaza al confirm() nativo del navegador):
+   mismo modal, pero más angosto y sin campos de formulario. */
+.modal-confirmacion {
+  max-width: 420px;
+}
+
+.modal-confirmacion-mensaje {
+  margin-bottom: 20px;
+}
+
+.fila-campos {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.fila-campos .campo {
+  flex: 1;
+  min-width: 140px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo label {
+  font-size: 0.85rem;
+  color: var(--color-texto-suave);
+}
+
+.campo input,
+.campo select {
+  padding: 9px 10px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: white;
+  color: var(--color-texto);
+}
+
+.campo input.monto {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Buscador de miembro en "Registrar ingreso" — un input de texto con un desplegable
+   de resultados abajo, en vez de un <select> gigante que obliga a scrollear. */
+.autocompletar {
+  position: relative;
+}
+
+.autocompletar input {
+  width: 100%;
+  padding: 9px 34px 9px 10px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: white;
+  color: var(--color-texto);
+  box-sizing: border-box;
+}
+
+.autocompletar-limpiar {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+
+.autocompletar-limpiar:hover {
+  color: var(--color-acento);
+}
+
+.autocompletar-lista {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  max-height: 240px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--color-borde);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(33, 38, 47, 0.12);
+}
+
+.autocompletar-lista li {
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.autocompletar-lista li:hover {
+  background: var(--color-acento-suave);
+  color: var(--color-acento);
+}
+
+.autocompletar-vacio {
+  color: var(--color-texto-suave);
+  cursor: default !important;
+}
+
+.autocompletar-vacio:hover {
+  background: transparent !important;
+  color: var(--color-texto-suave) !important;
+}
+
+.filtros {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.boton-primario,
+.boton-secundario {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.boton-primario {
+  background: var(--color-acento);
+  color: white;
+}
+
+.boton-primario:hover:not(:disabled) {
+  box-shadow: 0 3px 10px rgba(122, 42, 56, 0.28);
+  transform: translateY(-1px);
+}
+
+.boton-primario:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Variante para acciones destructivas (ej. confirmar "Eliminar") */
+.boton-primario-peligro {
+  background: var(--color-mal);
+}
+
+.boton-primario-peligro:hover:not(:disabled) {
+  box-shadow: 0 3px 10px rgba(161, 70, 42, 0.28);
+}
+
+.boton-secundario {
+  background: var(--color-superficie-2);
+  color: var(--color-texto);
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
+.boton-secundario:hover {
+  background: var(--color-acento-suave);
+  color: var(--color-acento);
+}
+
+.boton-grande {
+  align-self: flex-start;
+  padding: 12px 28px;
+}
+
+.enlace {
+  background: none;
+  border: none;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  margin-left: 8px;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.tabla th {
+  text-align: left;
+  padding: 11px 14px;
+  /* Grilla completa: línea alrededor de CADA celda (arriba/abajo/lados), no
+     solo abajo — así cada encabezado queda "encerrado" en su propio recuadro,
+     como en la grilla de referencia. */
+  border: 1px solid rgba(33, 38, 47, 0.24);
+  color: var(--color-texto);
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-transform: none;
+}
+
+.tabla td {
+  padding: 12px 14px;
+  border: 1px solid rgba(33, 38, 47, 0.16);
+}
+
+/* Franjas alternadas + resalte al pasar el mouse, para que las filas se
+   distingan de un vistazo en tablas largas (mismo criterio en .tabla-material
+   más abajo, para que todas las grillas de la app se vean igual). */
+.tabla tbody tr:nth-child(even) {
+  background: var(--color-superficie);
+}
+
+.tabla tbody tr:hover {
+  background: var(--color-acento-suave);
+}
+
+.monto-celda {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.fila-reversada {
+  opacity: 0.55;
+}
+
+.etiqueta {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.etiqueta-ingreso {
+  background: rgba(47, 107, 69, 0.12);
+  color: var(--color-bien);
+}
+
+.etiqueta-egreso {
+  background: rgba(161, 70, 42, 0.12);
+  color: var(--color-mal);
+}
+
+.etiqueta-reversa {
+  background: var(--color-superficie-2);
+  color: var(--color-texto-suave);
+  margin-left: 4px;
+}
+
+/* Estado de un compromiso de ofrenda especial (cumplió / falta que llegue el plazo / se pasó del plazo) */
+
+.etiqueta-cumplido {
+  background: rgba(47, 107, 69, 0.12);
+  color: var(--color-bien);
+}
+
+.etiqueta-pendiente {
+  background: rgba(181, 129, 31, 0.12);
+  color: var(--color-advertencia);
+}
+
+.etiqueta-en-mora {
+  background: rgba(161, 70, 42, 0.12);
+  color: var(--color-mal);
+}
+
+.alerta-error {
+  background: rgba(161, 70, 42, 0.1);
+  border: 1px solid var(--color-mal);
+  color: var(--color-mal);
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.alerta-exito {
+  background: rgba(47, 107, 69, 0.1);
+  border: 1px solid var(--color-bien);
+  color: var(--color-bien);
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.alerta-advertencia {
+  background: rgba(181, 129, 31, 0.1);
+  border: 1px solid var(--color-advertencia);
+  color: var(--color-advertencia);
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.lista-errores-importacion {
+  margin: 4px 0 0;
+  padding-left: 20px;
+  max-height: 180px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+
+.lista-errores-importacion li {
+  margin-bottom: 4px;
+}
+
+/* Botón con ícono (ej. "Nuevo miembro") */
+
+.boton-con-icono {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icono-boton {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Íconos de acción dentro de una fila de tabla (ver, editar, eliminar, guardar…) */
+
+.acciones-tabla {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* Mini-formulario inline para restablecer la contraseña de un usuario,
+   dentro de su misma fila en la tabla de Usuarios. */
+.restablecer-contrasena {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.restablecer-contrasena input {
+  padding: 6px 8px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  width: 160px;
+}
+
+.restablecer-contrasena .boton-primario {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
+/* Avatar (foto de perfil o inicial del nombre). Se define acá, global, y no solo en
+   app.css, porque las vistas de componentes ruteados por separado (Mi perfil, Usuarios)
+   no heredan los estilos encapsulados de App — cada componente standalone solo ve su
+   propio CSS, salvo lo que esté en este archivo global. */
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-acento);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+/* Cuando el avatar es una foto real (<img>) en vez del círculo con la inicial. */
+.avatar-foto {
+  object-fit: cover;
+}
+
+/* Tamaño chico, para usar dentro de una fila de tabla. */
+.avatar-chica {
+  width: 28px;
+  height: 28px;
+  font-size: 0.75rem;
+}
+
+/* Tamaño grande, para la página "Mi perfil". */
+.avatar-grande {
+  width: 72px;
+  height: 72px;
+  font-size: 1.6rem;
+}
+
+.usuario-nombre-celda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.foto-perfil-actual {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 8px;
+}
+
+.foto-perfil-acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.boton-deshabilitado {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.boton-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 7px;
+  background: none;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0;
+}
+
+.boton-icono .icono-nav {
+  width: 16px;
+  height: 16px;
+  opacity: 1;
+}
+
+.boton-icono:hover {
+  background: var(--color-superficie-2);
+  color: var(--color-texto);
+}
+
+.boton-icono-exito:hover {
+  background: rgba(47, 107, 69, 0.12);
+  color: var(--color-bien);
+}
+
+.boton-icono-peligro:hover {
+  background: rgba(161, 70, 42, 0.12);
+  color: var(--color-mal);
+}
+
+/* Botón de ícono "grande" tipo acción principal de la página (ej. "Nuevo miembro") */
+
+.boton-icono-grande {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.boton-icono-grande .icono-nav {
+  width: 20px;
+  height: 20px;
+}
+
+.boton-icono-primario {
+  background: var(--color-acento);
+  color: white;
+}
+
+.boton-icono-primario:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 3px 10px rgba(122, 42, 56, 0.28);
+}
+
+/* Angular Material: el tema "rose-red" tiñe sus superficies (mat-table,
+   mat-paginator...) de un blanco rosado propio, que se ve como un recuadro
+   aparte dentro de nuestras tarjetas blancas. Igualamos esos tokens al blanco
+   y colores del sistema para que se sientan parte del mismo diseño — esto
+   aplica a cualquier tabla/paginador que agreguemos después, no solo a esta. */
+:root {
+  --mat-sys-surface: #ffffff;
+  --mat-sys-surface-container: #ffffff;
+  --mat-sys-surface-container-low: #ffffff;
+  --mat-sys-surface-container-high: #ffffff;
+  --mat-sys-surface-container-highest: #ffffff;
+  --mat-sys-on-surface: var(--color-texto);
+  --mat-sys-on-surface-variant: var(--color-texto-suave);
+  --mat-sys-outline: var(--color-borde);
+  --mat-sys-outline-variant: var(--color-borde);
+  --mat-sys-primary: var(--color-acento);
+  --mat-sys-on-primary: #ffffff;
+}
+
+/* Tabla de Angular Material (mat-table), ajustada a la misma línea visual que .tabla */
+
+/* Envoltorio con scroll propio: si se agregan más columnas, aparece un scroll
+   horizontal adentro en vez de deformar la tarjeta. */
+.tabla-scroll {
+  overflow-x: auto;
+}
+
+.tabla-material {
+  /* Angular Material deja la tabla del ancho de su contenido por defecto
+     (como una tabla MDC "compacta"); forzamos que ocupe todo el ancho de la
+     tarjeta, como cualquier datatable. */
+  width: 100% !important;
+  min-width: 560px;
+  background: #ffffff !important;
+}
+
+/* La columna de íconos (ver/editar/eliminar) no debe estirarse: que se quede
+   angosta y las demás columnas se repartan el espacio que sobra. Funciona
+   igual si más adelante se agregan más columnas de datos. */
+.tabla-material .cdk-column-acciones {
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* Encabezado plano, igual que el resto de las tablas de la app (.tabla th):
+   sin fondo de color, en negrita y texto normal (no mayúsculas), con una
+   línea abajo. */
+.tabla-material .mat-mdc-header-row,
+.tabla-material .mat-mdc-header-cell {
+  background: #ffffff !important;
+}
+
+.tabla-material .mat-mdc-header-cell {
+  /* !important en la tipografía: Angular Material la define con variables de
+     tema de mayor peso, que pisaban estas reglas sin el !important.
+     La línea usa box-shadow en vez de border: Material trae su propio
+     sistema de bordes con variables de tema que ganaban siempre a un border
+     normal (incluso con !important) — box-shadow es una propiedad que
+     Material no toca para nada acá, así que esta sí se ve garantizado. */
+  color: var(--color-texto) !important;
+  font-weight: 700 !important;
+  font-size: 0.92rem !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  box-shadow:
+    inset 0 -2px 0 rgba(33, 38, 47, 0.24),
+    inset 1px 0 0 rgba(33, 38, 47, 0.18),
+    inset -1px 0 0 rgba(33, 38, 47, 0.18);
+  padding: 0 14px;
+}
+
+.tabla-material .mat-mdc-row {
+  background: #ffffff !important;
+}
+
+/* Misma franja alternada + resalte que .tabla, para que esta grilla (con
+   Angular Material) se vea igual que el resto de las tablas de la app. */
+.tabla-material .mat-mdc-row:nth-child(even) {
+  background: var(--color-superficie) !important;
+}
+
+.tabla-material .mat-mdc-row:hover {
+  background: var(--color-acento-suave) !important;
+}
+
+.tabla-material .mat-mdc-cell {
+  color: var(--color-texto);
+  font-size: 0.9rem;
+  /* box-shadow en vez de border: Angular Material trae su propio sistema de
+     bordes con variables de tema que ganaban siempre a un border normal
+     (incluso con !important). box-shadow es una propiedad que Material no
+     toca para nada acá, así que esta línea sí se ve garantizado. */
+  box-shadow:
+    inset 0 -1px 0 rgba(33, 38, 47, 0.16),
+    inset 1px 0 0 rgba(33, 38, 47, 0.12),
+    inset -1px 0 0 rgba(33, 38, 47, 0.12);
+  padding: 0 14px;
+}
+
+.tabla-material .mat-mdc-row.fila-edicion,
+.tabla-material .mat-mdc-row.fila-edicion .mat-mdc-cell {
+  background: var(--color-acento-suave) !important;
+}
+
+.tabla-material .fila-edicion input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  font-size: 0.88rem;
+}
+
+/* Buscador sobre el listado */
+
+.campo-busqueda {
+  display: flex;
+  gap: 8px;
+}
+
+.campo-busqueda input {
+  padding: 8px 10px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  min-width: 240px;
+}
+
+/* Casilla de filtro suelta junto al buscador (ej. "Mostrar inactivos" en Miembros). */
+.filtro-casilla {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filtro-casilla input {
+  cursor: pointer;
+}
+
+.contador-titulo {
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Fila de edición inline en una tabla */
+
+.fila-edicion input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  font-size: 0.88rem;
+}
+
+.fila-edicion-nombres {
+  display: flex;
+  gap: 6px;
+}
+
+/* Pie de tabla: "filas por página" + "mostrando X al Y de Z" + paginación numerada,
+   siempre visible aunque haya una sola página — estilo panel admin clásico. */
+
+.pie-tabla {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-borde);
+}
+
+.pie-tabla-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.pie-tabla-info .ayuda {
+  margin: 0;
+}
+
+.pie-tabla-tamano {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--color-texto-suave);
+}
+
+.pie-tabla-tamano select {
+  padding: 6px 8px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: white;
+  color: var(--color-texto);
+}
+
+.paginacion-numerada {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.boton-paginacion {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  background: white;
+  color: var(--color-texto);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.boton-paginacion:hover:not(:disabled):not(.activo) {
+  background: var(--color-acento-suave);
+  color: var(--color-acento);
+}
+
+.boton-paginacion:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.boton-paginacion.activo {
+  background: var(--color-acento);
+  border-color: var(--color-acento);
+  color: white;
+  font-weight: 600;
+}
+
+.paginacion-puntos {
+  color: var(--color-texto-suave);
+  padding: 0 4px;
+}
+
+/* Páginas de autenticación (login, olvidé mi contraseña, restablecer contraseña): se definen
+   acá, globales, y no en login.component.css, porque esos dos componentes nuevos se rutean
+   por separado y no heredan los estilos encapsulados de login.component (cada componente
+   standalone solo ve su propio CSS, salvo lo que esté en este archivo global). */
+.pagina-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-superficie-2);
+  padding: 16px;
+}
+
+.tarjeta-login {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.marca-login {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--color-texto-suave);
+}
+
+.marca-icono {
+  font-size: 1.1rem;
+}
+
+.tarjeta-login h1 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+/* Logo de la organización en las páginas de autenticación (reemplaza el ícono + texto
+   "Tesorería" de .marca-login). Centrado y con un tamaño que se ve bien sin dominar la
+   tarjeta de login; max-width en vez de un ancho fijo para que se achique bien en pantallas
+   angostas junto con .tarjeta-login. */
+.logo-login {
+  display: block;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  margin: 0 auto;
+  align-self: center;
+}
+
+/* Enlace para volver (ej. "Volver a iniciar sesión") en las páginas de autenticación. */
+.enlace-volver {
+  color: var(--color-acento);
+  text-decoration: none;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.enlace-volver:hover {
+  text-decoration: underline;
+}
